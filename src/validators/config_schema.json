@@ -1,0 +1,993 @@
+{
+  "type": "object",
+  "properties": {
+    "projectName": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "designWidth": {
+      "oneOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "string",
+          "pattern": "^__function__$"
+        }
+      ]
+    },
+    "deviceRatio": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "sourceRoot": {
+      "type": "string"
+    },
+    "outputRoot": {
+      "type": "string"
+    },
+    "plugins": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": true
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "presets": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": true
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "env": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "defineConstants": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "copy": {
+      "type": "object",
+      "properties": {
+        "patterns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              },
+              "ignore": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "transform":  {
+                "type": "string",
+                "pattern": "^__function__$"
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "options": {
+          "type": "object",
+          "properties": {
+            "ignore": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "framework": {
+      "type": "string",
+      "enum": [
+        "nerv",
+        "react",
+        "preact",
+        "vue",
+        "vue3"
+      ]
+    },
+    "compiler": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "webpack4",
+            "webpack5"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "webpack4",
+                "webpack5"
+              ]
+            },
+            "prebundle": {
+              "type": "object",
+              "properties": {
+                "enable": {
+                  "type": "boolean"
+                },
+                "timings": {
+                  "type": "boolean"
+                },
+                "cacheDir": {
+                  "type": "string"
+                },
+                "force": {
+                  "type": "boolean"
+                },
+                "include": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "exclude": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "esbuild": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": true
+                },
+                "swc": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": true
+                },
+                "webpack": {
+                  "type": "object",
+                  "properties": {
+                    "provide": {
+                      "type": "array",
+                      "items":  {
+                        "type": "string",
+                        "pattern": "^__function__$"
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "jsMinimizer": {
+      "type": "string",
+      "enum": [
+        "terser",
+        "esbuild"
+      ]
+    },
+    "cssMinimizer": {
+      "type": "string",
+      "enum": [
+        "csso",
+        "esbuild",
+        "parcelCss"
+      ]
+    },
+    "cache": {
+      "type": "object",
+      "properties": {
+        "enable": {
+          "type": "boolean"
+        },
+        "buildDependencies": {
+          "type": "object",
+          "properties": {
+            "config": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "logger": {
+      "type": "object",
+      "properties": {
+        "quiet": {
+          "type": "boolean"
+        },
+        "stats": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "mini": {
+      "type": "object",
+      "properties": {
+        "baseLevel": {
+          "type": "integer"
+        },
+        "compile": {
+          "type": "object",
+          "properties": {
+            "exclude": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^__function__$"
+                  }
+                ]
+              }
+            },
+            "include": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^__function__$"
+                  }
+                ]
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "webpackChain":  {
+          "type": "string",
+          "pattern": "^__function__$"
+        },
+        "commonChunks": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^__function__$"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "addChunkPages":  {
+          "type": "string",
+          "pattern": "^__function__$"
+        },
+        "optimizeMainPackage": {
+          "type": "object",
+          "properties": {
+            "enable": {
+              "type": "boolean"
+            },
+            "exclude": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^__function__$"
+                  }
+                ]
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "output": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "enableSourceMap": {
+          "type": "boolean"
+        },
+        "sourceMapType": {
+          "type": "string"
+        },
+        "useHtmlComponents": {
+          "type": "boolean"
+        },
+        "useDeprecatedAdapterComponent": {
+          "type": "boolean"
+        },
+        "debugReact": {
+          "type": "boolean"
+        },
+        "hot": {
+          "type": "boolean"
+        },
+        "minifyXML": {
+          "type": "object",
+          "properties": {
+            "collapseWhitespace": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "postcss": {
+          "type": "object",
+          "properties": {
+            "autoprefixer": {
+              "type": "object",
+              "properties": {
+                "enable": {
+                  "type": "boolean"
+                },
+                "config": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": true
+                }
+              },
+              "additionalProperties": false
+            },
+            "pxtransform": {
+              "type": "object",
+              "properties": {
+                "enable": {
+                  "type": "boolean"
+                },
+                "config": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": true
+                }
+              },
+              "additionalProperties": false
+            },
+            "url": {
+              "type": "object",
+              "properties": {
+                "enable": {
+                  "type": "boolean"
+                },
+                "config": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": true
+                }
+              },
+              "additionalProperties": false
+            },
+            "cssModules": {
+              "type": "object",
+              "properties": {
+                "enable": {
+                  "type": "boolean"
+                },
+                "config": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": true
+                }
+              },
+              "additionalProperties": false
+            },
+            "htmltransform": {
+              "type": "object",
+              "properties": {
+                "enable": {
+                  "type": "boolean"
+                },
+                "config": {
+                  "type": "object",
+                  "properties": {
+                    "removeCursorStyle": {
+                      "type": "boolean"
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": true
+        },
+        "cssLoaderOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "styleLoaderOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "sassLoaderOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "lessLoaderOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "stylusLoaderOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "mediaUrlLoaderOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "fontUrlLoaderOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "imageUrlLoaderOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "miniCssExtractPluginOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "alias": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "csso": {
+      "type": "object",
+      "properties": {
+        "enable": {
+          "type": "boolean"
+        },
+        "config": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "terser": {
+      "type": "object",
+      "properties": {
+        "enable": {
+          "type": "boolean"
+        },
+        "config": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "esbuild": {
+      "type": "object",
+      "properties": {
+        "minify": {
+          "type": "object",
+          "properties": {
+            "enable": {
+              "type": "boolean"
+            },
+            "config": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "sass": {
+      "type": "object",
+      "properties": {
+        "resource": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "projectDirectory": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "h5": {
+      "type": "object",
+      "properties": {
+        "devServer": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "publicPath": {
+          "type": "string"
+        },
+        "staticDirectory": {
+          "type": "string"
+        },
+        "chunkDirectory": {
+          "type": "string"
+        },
+        "compile": {
+          "type": "object",
+          "properties": {
+            "exclude": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^__function__$"
+                  }
+                ]
+              }
+            },
+            "include": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^__function__$"
+                  }
+                ]
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "htmlPluginOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "webpackChain":  {
+          "type": "string",
+          "pattern": "^__function__$"
+        },
+        "output": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "router": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "hash",
+                "browser",
+                "multi"
+              ]
+            },
+            "customRoutes": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": true
+            },
+            "basename": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        },
+        "esnextModules": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": true
+              }
+            ]
+          }
+        },
+        "entry": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": true
+            },
+            {
+              "type": "string",
+              "pattern": "^__function__$"
+            }
+          ]
+        },
+        "enableSourceMap": {
+          "type": "boolean"
+        },
+        "sourceMapType": {
+          "type": "string"
+        },
+        "enableExtract": {
+          "type": "boolean"
+        },
+        "cssLoaderOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "styleLoaderOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "sassLoaderOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "lessLoaderOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "stylusLoaderOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "mediaUrlLoaderOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "fontUrlLoaderOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "imageUrlLoaderOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "miniCssExtractPluginOption": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "postcss": {
+          "type": "object",
+          "properties": {
+            "autoprefixer": {
+              "type": "object",
+              "properties": {
+                "enable": {
+                  "type": "boolean"
+                },
+                "config": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": true
+                }
+              },
+              "additionalProperties": false
+            },
+            "pxtransform": {
+              "type": "object",
+              "properties": {
+                "enable": {
+                  "type": "boolean"
+                },
+                "config": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": true
+                }
+              },
+              "additionalProperties": false
+            },
+            "url": {
+              "type": "object",
+              "properties": {
+                "enable": {
+                  "type": "boolean"
+                },
+                "config": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": true
+                }
+              },
+              "additionalProperties": false
+            },
+            "cssModules": {
+              "type": "object",
+              "properties": {
+                "enable": {
+                  "type": "boolean"
+                },
+                "config": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": true
+                }
+              },
+              "additionalProperties": false
+            },
+            "htmltransform": {
+              "type": "object",
+              "properties": {
+                "enable": {
+                  "type": "boolean"
+                },
+                "config": {
+                  "type": "object",
+                  "properties": {
+                    "removeCursorStyle": {
+                      "type": "boolean"
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "rn": {
+      "type": "object",
+      "properties": {
+        "appName": {
+          "type": "string"
+        },
+        "entry": {
+          "type": "string"
+        },
+        "output": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "postcss": {
+          "type": "object",
+          "properties": {
+            "options": {
+              "type": "object"
+            },
+            "scalable": {
+              "type": "boolean"
+            },
+            "pxtransform": {
+              "type": "object",
+              "properties": {
+                "enable": {
+                  "type": "boolean"
+                },
+                "config": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": true
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": true
+        },
+        "sass": {
+          "type": "object",
+          "properties": {
+            "options": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": true
+            },
+            "additionalData": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^__function__$"
+                }
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "less": {
+          "type": "object",
+          "properties": {
+            "options": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": true
+            },
+            "additionalData": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^__function__$"
+                }
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "stylus": {
+          "type": "object",
+          "properties": {
+            "options": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": true
+            },
+            "additionalData": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^__function__$"
+                }
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "resolve": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "enableMultipleClassName": {
+          "type": "boolean"
+        },
+        "enableMergeStyle": {
+          "type": "boolean"
+        },
+        "enableSvgTransform": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "required": [
+    "projectName",
+    "sourceRoot",
+    "outputRoot",
+    "framework"
+  ],
+  "additionalProperties": true
+}
