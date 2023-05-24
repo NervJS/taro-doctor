@@ -252,6 +252,7 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
-const { validateConfig } = nativeBinding
+const { validateConfig, validatePackage } = nativeBinding
 
 module.exports.validateConfig = validateConfig
+module.exports.validatePackage = validatePackage
