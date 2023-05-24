@@ -2,11 +2,11 @@
 
 mod validators;
 
-use std::{fs, error::Error, path::PathBuf, env};
+use std::{ fs, error::Error, path::PathBuf, env };
 
 use validators::{ config::ConfigValidator, common::Validator };
 
-use crate::validators::message::{Message, self};
+use crate::validators::message::{ Message, self };
 
 #[macro_use]
 extern crate napi_derive;
@@ -17,6 +17,11 @@ pub fn validate_config(config_str: String) {
   if let Err(e) = result {
     println!("{}", Message { kind: message::MessageKind::Error, content: e.to_string() });
   }
+}
+
+#[napi]
+pub fn validate_package(package_path: String) {
+
 }
 
 fn validate_config_core(config_str: String) -> Result<(), Box<dyn Error>> {
@@ -51,4 +56,8 @@ fn validate_config_core(config_str: String) -> Result<(), Box<dyn Error>> {
     println!("{}", Message { kind: message::MessageKind::Success, content: "项目配置正确！".to_string() });
   }
   Ok(())
+}
+
+fn validate_package_core() -> Result<(), Box<dyn Error>> {
+
 }
