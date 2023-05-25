@@ -4,7 +4,7 @@ mod validators;
 
 use std::{ fs, error::Error, path::PathBuf, env };
 
-use crate::validators::{ message::{ Message, self }, package::PackageValidator, config::ConfigValidator, common::Validator };
+use crate::validators::{ message::{ Message, self }, package::{ PackageValidator }, config::ConfigValidator, common::{ Validator } };
 
 #[macro_use]
 extern crate napi_derive;
@@ -18,8 +18,8 @@ pub fn validate_config(config_str: String) {
 }
 
 #[napi]
-pub fn validate_package(app_path: String, node_modules_path: String) {
-  let result = validate_package_core(app_path, node_modules_path);
+pub fn validate_package(app_path: String, node_modules_path: String, cli_version: String) {
+  let result = validate_package_core(app_path, node_modules_path, cli_version);
   if let Err(e) = result {
     println!("{}", Message { kind: message::MessageKind::Error, content: e.to_string() });
   }
@@ -59,7 +59,7 @@ fn validate_config_core(config_str: String) -> Result<(), Box<dyn Error>> {
   Ok(())
 }
 
-fn validate_package_core(app_path: String, node_modules_path: String) -> Result<(), Box<dyn Error>> {
+fn validate_package_core(app_path: String, node_modules_path: String, cli_version: String) -> Result<(), Box<dyn Error>> {
   let tip = Message {
     kind: validators::message::MessageKind::Info,
     content: String::from("开始进行项目依赖安装正确性验证！")
@@ -69,7 +69,18 @@ fn validate_package_core(app_path: String, node_modules_path: String) -> Result<
   path.push(app_path);
   path.push("package.json");
   let package_str = fs::read_to_string(path.as_path())?;
-  let package_validator_result = PackageValidator::build(&package_str, &node_modules_path).unwrap();
-  package_validator_result.get_taro_packages();
+  let package_validator_result = PackageValidator::build(&package_str, &node_modules_path, &cli_version);
+  let messages = match package_validator_result {
+    Ok(package_validator) => package_validator.validate(),
+    Err(e) => vec![
+      Message {
+        kind: validators::message::MessageKind::Error,
+        content: e.to_string()
+      }
+    ]
+  };
+  for message in messages {
+    println!("{}", message);
+  }
   Ok(())
 }
