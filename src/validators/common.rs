@@ -1,4 +1,4 @@
-use std::{error::Error, path::PathBuf, fs};
+use std::{error::Error, path::PathBuf, fs, cmp::Ordering};
 
 use serde_json::{from_str, Value};
 
@@ -42,5 +42,23 @@ pub fn get_package_info(node_modules_path: &str, name: &str) -> Result<PackageIn
         )
       )
     }
+  }
+}
+
+pub fn compare_versions(a: &str, b: &str) -> Option<Ordering> {
+  let parts1: Vec<u64> = a.split('.').filter_map(|s| s.parse().ok()).collect();
+  let parts2: Vec<u64> = b.split('.').filter_map(|s| s.parse().ok()).collect();
+  for (p1, p2) in parts1.iter().zip(parts2.iter()) {
+    match p1.cmp(p2) {
+      Ordering::Less => return Some(Ordering::Less),
+      Ordering::Greater => return Some(Ordering::Greater),
+      Ordering::Equal => continue,
+    }
+  }
+
+  match parts1.len().cmp(&parts2.len()) {
+    Ordering::Less => Some(Ordering::Less),
+    Ordering::Greater => Some(Ordering::Greater),
+    Ordering::Equal => Some(Ordering::Equal),
   }
 }

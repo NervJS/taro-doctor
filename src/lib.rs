@@ -4,6 +4,8 @@ mod validators;
 
 use std::{ fs, error::Error, path::PathBuf, env };
 
+use validators::env::EnvValidator;
+
 use crate::validators::{ message::{ Message, self }, package::{ PackageValidator }, config::ConfigValidator, common::{ Validator } };
 
 #[macro_use]
@@ -20,6 +22,14 @@ pub fn validate_config(config_str: String) {
 #[napi]
 pub fn validate_package(app_path: String, node_modules_path: String, cli_version: String) {
   let result = validate_package_core(app_path, node_modules_path, cli_version);
+  if let Err(e) = result {
+    println!("{}", Message { kind: message::MessageKind::Error, content: e.to_string() });
+  }
+}
+
+#[napi]
+pub fn validate_env() {
+  let result = validate_env_core();
   if let Err(e) = result {
     println!("{}", Message { kind: message::MessageKind::Error, content: e.to_string() });
   }
@@ -79,6 +89,15 @@ fn validate_package_core(app_path: String, node_modules_path: String, cli_versio
       }
     ]
   };
+  for message in messages {
+    println!("{}", message);
+  }
+  Ok(())
+}
+
+fn validate_env_core() -> Result<(), Box<dyn Error>> {
+  let env_validator = EnvValidator::build();
+  let messages = env_validator.validate();
   for message in messages {
     println!("{}", message);
   }
