@@ -103,19 +103,19 @@ impl<'a> Validator for PackageValidator<'a> {
   fn validate(&self) -> Vec<Message> {
     let mut messages: Vec<Message> = vec![];
     let taro_packages = self.get_taro_packages();
-    messages.push(Message { kind: MessageKind::Manual, content: "本地安装的 Taro 相关依赖版本信息如下：".to_string() });
+    messages.push(Message { kind: MessageKind::Manual, content: "本地安装的 Taro 相关依赖版本信息如下：".to_string(), solution: None });
     let cli_version = self.cli_version;
     for p in taro_packages {
       let package_info = get_package_info(self.node_modules_path, p);
       match package_info {
         Ok(info) => {
-          messages.push(Message { kind: MessageKind::Manual, content: format!("- {}: {}", info.name, info.version) });
+          messages.push(Message { kind: MessageKind::Manual, content: format!("- {}: {}", info.name, info.version), solution: None });
           if UPDATE_PACKAGE_LIST.contains(&p.as_str()) && cli_version != info.version {
-            messages.push(Message { kind: MessageKind::Error, content: format!("依赖 {} ({}) 与当前使用的 Taro CLI ({}) 版本不一致, 请更新为统一的版本", p, info.version, cli_version) });
+            messages.push(Message { kind: MessageKind::Error, content: format!("依赖 {} ({}) 与当前使用的 Taro CLI ({}) 版本不一致, 请更新为统一的版本", p, info.version, cli_version), solution: None });
           }
         },
         Err(_) => {
-          messages.push(Message { kind: MessageKind::Error, content: format!("请安装 Taro 依赖: {}", p) });
+          messages.push(Message { kind: MessageKind::Error, content: format!("请安装 Taro 依赖: {}", p), solution: None });
         }
       }
     }

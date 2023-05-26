@@ -168,13 +168,14 @@ impl Validator for ConfigValidator {
             // })
             errors_result.push(Message {
               kind: MessageKind::Error,
-              content: self.parse_error(error)
+              content: self.parse_error(error),
+              solution: None
             });
           }
         }
       }
       Err(error) => {
-        errors_result.push(Message { kind: MessageKind::Error, content: self.parse_error(error) });
+        errors_result.push(Message { kind: MessageKind::Error, content: self.parse_error(error), solution: None });
       },
     }
 

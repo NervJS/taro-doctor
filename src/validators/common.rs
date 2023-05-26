@@ -11,6 +11,7 @@ pub trait Validator {
 pub struct PackageInfo {
   pub name: String,
   pub version: String,
+  pub json: Value,
 }
 
 pub fn get_package_info(node_modules_path: &str, name: &str) -> Result<PackageInfo, Box<dyn Error>> {
@@ -30,14 +31,21 @@ pub fn get_package_info(node_modules_path: &str, name: &str) -> Result<PackageIn
   let package_json_re = from_str::<Value>(&package_str);
   match package_json_re {
     Ok(package_json) => {
-      Ok(PackageInfo { name: name.to_string(), version: package_json.get("version").unwrap().as_str().unwrap().to_string() })
+      Ok(
+        PackageInfo {
+          name: name.to_string(), 
+          version: package_json.get("version").unwrap().as_str().unwrap().to_string(),
+          json: package_json
+        }
+      )
     },
     Err(e) => {
       Err(
         Box::new(
           Message {
             kind: MessageKind::Error,
-            content: e.to_string()
+            content: e.to_string(),
+            solution: None
           }
         )
       )

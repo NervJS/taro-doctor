@@ -4,7 +4,7 @@ mod validators;
 
 use std::{ fs, error::Error, path::PathBuf, env };
 
-use validators::env::EnvValidator;
+use validators::{env::EnvValidator, Recommend::RecommendValidator};
 
 use crate::validators::{ message::{ Message, self }, package::{ PackageValidator }, config::ConfigValidator, common::{ Validator } };
 
@@ -15,7 +15,7 @@ extern crate napi_derive;
 pub fn validate_config(config_str: String) {
   let result = validate_config_core(config_str);
   if let Err(e) = result {
-    println!("{}", Message { kind: message::MessageKind::Error, content: e.to_string() });
+    println!("{}", Message { kind: message::MessageKind::Error, content: e.to_string(), solution: None });
   }
 }
 
@@ -23,7 +23,7 @@ pub fn validate_config(config_str: String) {
 pub fn validate_package(app_path: String, node_modules_path: String, cli_version: String) {
   let result = validate_package_core(app_path, node_modules_path, cli_version);
   if let Err(e) = result {
-    println!("{}", Message { kind: message::MessageKind::Error, content: e.to_string() });
+    println!("{}", Message { kind: message::MessageKind::Error, content: e.to_string(), solution: None });
   }
 }
 
@@ -31,14 +31,23 @@ pub fn validate_package(app_path: String, node_modules_path: String, cli_version
 pub fn validate_env() {
   let result = validate_env_core();
   if let Err(e) = result {
-    println!("{}", Message { kind: message::MessageKind::Error, content: e.to_string() });
+    println!("{}", Message { kind: message::MessageKind::Error, content: e.to_string(), solution: None });
+  }
+}
+
+#[napi]
+pub fn validate_recommend(app_path: String, node_modules_path: String) {
+  let result = validate_recommend_core(app_path, node_modules_path);
+  if let Err(e) = result {
+    println!("{}", Message { kind: message::MessageKind::Error, content: e.to_string(), solution: None });
   }
 }
 
 fn validate_config_core(config_str: String) -> Result<(), Box<dyn Error>> {
   let tip = Message {
     kind: validators::message::MessageKind::Info,
-    content: String::from("开始进行项目配置验证！")
+    content: String::from("开始进行项目配置验证！"),
+    solution: None
   };
   println!("{}", tip);
   let current_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
@@ -55,7 +64,8 @@ fn validate_config_core(config_str: String) -> Result<(), Box<dyn Error>> {
     Err(e) => vec![
       Message {
         kind: validators::message::MessageKind::Error,
-        content: e.to_string()
+        content: e.to_string(),
+        solution: None
       }
     ]
   };
@@ -64,7 +74,7 @@ fn validate_config_core(config_str: String) -> Result<(), Box<dyn Error>> {
       println!("{}", message);
     }
   } else {
-    println!("{}", Message { kind: message::MessageKind::Success, content: "项目配置正确！".to_string() });
+    println!("{}", Message { kind: message::MessageKind::Success, content: "项目配置正确！".to_string(), solution: None });
   }
   Ok(())
 }
@@ -72,7 +82,8 @@ fn validate_config_core(config_str: String) -> Result<(), Box<dyn Error>> {
 fn validate_package_core(app_path: String, node_modules_path: String, cli_version: String) -> Result<(), Box<dyn Error>> {
   let tip = Message {
     kind: validators::message::MessageKind::Info,
-    content: String::from("开始进行项目依赖安装正确性验证！")
+    content: String::from("开始进行项目依赖安装正确性验证！"),
+    solution: None
   };
   println!("{}", tip);
   let mut path = PathBuf::new();
@@ -85,7 +96,8 @@ fn validate_package_core(app_path: String, node_modules_path: String, cli_versio
     Err(e) => vec![
       Message {
         kind: validators::message::MessageKind::Error,
-        content: e.to_string()
+        content: e.to_string(),
+        solution: None
       }
     ]
   };
@@ -98,6 +110,24 @@ fn validate_package_core(app_path: String, node_modules_path: String, cli_versio
 fn validate_env_core() -> Result<(), Box<dyn Error>> {
   let env_validator = EnvValidator::build();
   let messages = env_validator.validate();
+  for message in messages {
+    println!("{}", message);
+  }
+  Ok(())
+}
+
+fn validate_recommend_core(app_path: String, node_modules_path: String) -> Result<(), Box<dyn Error>> {
+  let recommend_validator_result = RecommendValidator::build(&app_path, &node_modules_path);
+  let messages = match recommend_validator_result {
+    Ok(recommend_validator) => recommend_validator.validate(),
+    Err(e) => vec![
+      Message {
+        kind: validators::message::MessageKind::Error,
+        content: e.to_string(),
+        solution: None
+      }
+    ]
+  };
   for message in messages {
     println!("{}", message);
   }

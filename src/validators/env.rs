@@ -27,31 +27,36 @@ impl Validator for EnvValidator {
             if ordering == Ordering::Greater || ordering == Ordering::Equal {
               Message {
                 kind: MessageKind::Success,
-                content: format!("安装的 Node 版本为 {}", version)
+                content: format!("安装的 Node 版本为 {}", version),
+                solution: None
               }
             } else {
               Message {
                 kind: MessageKind::Error,
-                content: format!("安装的 Node 版本为 {}，小于最低要求 Node 版本 14.0.0，请安装正确的 Node 版本，推荐使用 nvm(https://github.com/nvm-sh/nvm) 来管理 Node 版本", version)
+                content: format!("安装的 Node 版本为 {}，小于最低要求 Node 版本 14.0.0", version),
+                solution: Some("请安装正确的 Node 版本，推荐使用 nvm(https://github.com/nvm-sh/nvm) 来管理 Node 版本".to_string())
               }
             }
           } else {
             Message {
               kind: MessageKind::Success,
-              content: format!("安装的 Node 版本为 {}", version)
+              content: format!("安装的 Node 版本为 {}", version),
+              solution: None
             }
           }
         } else {
           Message {
             kind: MessageKind::Error,
-            content: format!("获取 Node 版本失败，请查看是否正确安装 Node")
+            content: format!("获取 Node 版本失败，请查看是否正确安装 Node"),
+            solution: Some("推荐使用 nvm(https://github.com/nvm-sh/nvm) 来管理 Node 版本".to_string())
           }
         }
       },
       Err(_) => {
         Message {
           kind: MessageKind::Error,
-          content: format!("获取 Node 版本失败，请查看是否正确安装 Node")
+          content: format!("获取 Node 版本失败，请查看是否正确安装 Node"),
+          solution: Some("推荐使用 nvm(https://github.com/nvm-sh/nvm) 来管理 Node 版本".to_string())
         }
       }
     };

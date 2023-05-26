@@ -6,3 +6,4 @@
 export function validateConfig(configStr: string): void
 export function validatePackage(appPath: string, nodeModulesPath: string, cliVersion: string): void
 export function validateEnv(): void
+export function validateRecommend(appPath: string, nodeModulesPath: string): void
