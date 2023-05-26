@@ -23,7 +23,7 @@ impl fmt::Display for Message {
     match &self.kind {
       MessageKind::Error => {
         if let Some(solution) = &self.solution {
-          write!(f, "{} {}      {}", style("[✗] ").red(), style(&self.content).white(), style(solution).color256(246))
+          write!(f, "{} {}     {}", style("[✗] ").red(), style(&self.content).white(), style(solution).color256(246))
         } else {
           write!(f, "{} {}", style("[✗] ").red(), style(&self.content).white())
         }
@@ -36,7 +36,7 @@ impl fmt::Display for Message {
       },
       MessageKind::Warning => {
         if let Some(solution) = &self.solution {
-          write!(f, "{} {}      {}", style("[!] ").yellow(), style(&self.content).white(), style(solution).color256(246))
+          write!(f, "{} {}     {}", style("[!] ").yellow(), style(&self.content).white(), style(solution).color256(246))
         } else {
           write!(f, "{} {}", style("[!] ").yellow(), style(&self.content).white())
         }
