@@ -1,9 +1,5 @@
 import * as path from 'path'
 
-import { ESLint } from 'eslint'
-import * as glob from 'glob'
-import { IPluginContext } from '@tarojs/service'
-
 import {
   validateEnv,
   validateConfig,
@@ -11,7 +7,7 @@ import {
   validateRecommend
 } from './js-binding'
 
-export default (ctx: IPluginContext) => {
+export default (ctx) => {
 	ctx.registerCommand({
     name: 'dd',
     async fn() {
@@ -38,6 +34,8 @@ export default (ctx: IPluginContext) => {
 }
 
 async function validateEslint(projectConfig, chalk) {
+  const { ESLint } = require('eslint')
+  const glob = require('glob')
   const appPath = process.cwd()
   const globPattern = glob.sync(path.join(appPath, '.eslintrc*'))
 
