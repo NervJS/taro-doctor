@@ -1,3 +1,7 @@
+## [0.0.2](https://github.com/NervJS/taro-doctor/compare/0.0.1...0.0.2) (2023-05-29)
+
+
+
 ## 0.0.1 (2023-05-29)
 
 
