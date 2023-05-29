@@ -1,7 +1,7 @@
 name: CI
 env:
   DEBUG: napi:*
-  APP_NAME: doctor
+  APP_NAME: taro-doctor
   MACOSX_DEPLOYMENT_TARGET: '10.13'
 'on':
   push:
