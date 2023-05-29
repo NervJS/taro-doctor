@@ -1,3 +1,3 @@
-# `@tarojs/doctor-win32-x64-msvc`
+# `@tarojs/plugin-doctor-win32-x64-msvc`
 
-This is the **x86_64-pc-windows-msvc** binary for `@tarojs/doctor`
+This is the **x86_64-pc-windows-msvc** binary for `@tarojs/plugin-doctor`

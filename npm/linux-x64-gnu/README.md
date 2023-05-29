@@ -1,3 +1,3 @@
-# `@tarojs/doctor-linux-x64-gnu`
+# `@tarojs/plugin-doctor-linux-x64-gnu`
 
-This is the **x86_64-unknown-linux-gnu** binary for `@tarojs/doctor`
+This is the **x86_64-unknown-linux-gnu** binary for `@tarojs/plugin-doctor`

@@ -1,5 +1,5 @@
 {
-  "name": "@tarojs/doctor-linux-arm64-gnu",
+  "name": "@tarojs/plugin-doctor-linux-arm64-gnu",
   "version": "0.0.1",
   "os": [
     "linux"
@@ -7,9 +7,9 @@
   "cpu": [
     "arm64"
   ],
-  "main": "doctor.linux-arm64-gnu.node",
+  "main": "taro-doctor.linux-arm64-gnu.node",
   "files": [
-    "doctor.linux-arm64-gnu.node"
+    "taro-doctor.linux-arm64-gnu.node"
   ],
   "license": "MIT",
   "engines": {
@@ -17,5 +17,6 @@
   },
   "libc": [
     "glibc"
-  ]
+  ],
+  "repository": "https://github.com/NervJS/taro-doctor.git"
 }

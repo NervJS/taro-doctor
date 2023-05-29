@@ -1,3 +1,3 @@
-# `@tarojs/doctor-linux-arm64-musl`
+# `@tarojs/plugin-doctor-linux-arm64-musl`
 
-This is the **aarch64-unknown-linux-musl** binary for `@tarojs/doctor`
+This is the **aarch64-unknown-linux-musl** binary for `@tarojs/plugin-doctor`

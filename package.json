@@ -42,8 +42,8 @@
   },
   "scripts": {
     "artifacts": "napi artifacts",
-    "build": "napi build --platform --release --js js-binding.js --dts js-binding.d.ts && tsc index.ts",
-    "build:debug": "napi build --platform --js js-binding.js --dts js-binding.d.ts && tsc index.ts",
+    "build": "napi build --platform --release --js js-binding.js --dts js-binding.d.ts && tsc",
+    "build:debug": "napi build --platform --js js-binding.js --dts js-binding.d.ts && tsc",
     "prepublishOnly": "napi prepublish -t npm",
     "test": "ava",
     "universal": "napi universal",
@@ -58,5 +58,6 @@
     "trailingComma": "all",
     "singleQuote": true,
     "arrowParens": "always"
-  }
+  },
+  "repository": "https://github.com/NervJS/taro-doctor.git"
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@tarojs/doctor-win32-arm64-msvc",
+  "name": "@tarojs/plugin-doctor-win32-arm64-msvc",
   "version": "0.0.1",
   "os": [
     "win32"
@@ -7,12 +7,13 @@
   "cpu": [
     "arm64"
   ],
-  "main": "doctor.win32-arm64-msvc.node",
+  "main": "taro-doctor.win32-arm64-msvc.node",
   "files": [
-    "doctor.win32-arm64-msvc.node"
+    "taro-doctor.win32-arm64-msvc.node"
   ],
   "license": "MIT",
   "engines": {
     "node": ">= 10"
-  }
+  },
+  "repository": "https://github.com/NervJS/taro-doctor.git"
 }

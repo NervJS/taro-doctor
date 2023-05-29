@@ -1,5 +1,5 @@
 {
-  "name": "@tarojs/doctor-darwin-arm64",
+  "name": "@tarojs/plugin-doctor-darwin-arm64",
   "version": "0.0.1",
   "os": [
     "darwin"
@@ -7,12 +7,13 @@
   "cpu": [
     "arm64"
   ],
-  "main": "doctor.darwin-arm64.node",
+  "main": "taro-doctor.darwin-arm64.node",
   "files": [
-    "doctor.darwin-arm64.node"
+    "taro-doctor.darwin-arm64.node"
   ],
   "license": "MIT",
   "engines": {
     "node": ">= 10"
-  }
+  },
+  "repository": "https://github.com/NervJS/taro-doctor.git"
 }

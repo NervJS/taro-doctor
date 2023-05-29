@@ -1,5 +1,8 @@
 import * as path from 'path'
 
+import { ESLint } from 'eslint'
+import * as glob from 'glob'
+
 import {
   validateEnv,
   validateConfig,
@@ -34,8 +37,6 @@ export default (ctx) => {
 }
 
 async function validateEslint(projectConfig, chalk) {
-  const { ESLint } = require('eslint')
-  const glob = require('glob')
   const appPath = process.cwd()
   const globPattern = glob.sync(path.join(appPath, '.eslintrc*'))
 

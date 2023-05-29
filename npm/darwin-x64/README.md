@@ -1,3 +1,3 @@
-# `@tarojs/doctor-darwin-x64`
+# `@tarojs/plugin-doctor-darwin-x64`
 
-This is the **x86_64-apple-darwin** binary for `@tarojs/doctor`
+This is the **x86_64-apple-darwin** binary for `@tarojs/plugin-doctor`

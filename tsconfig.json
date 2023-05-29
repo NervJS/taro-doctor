@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "ES2015",
     "module": "commonjs",
     "removeComments": false,
     "preserveConstEnums": false,
@@ -14,11 +14,11 @@
     "noUnusedParameters": true,
     "strictNullChecks": true,
     "resolveJsonModule": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "baseUrl": "."
   },
   "include": [
-    "."
+    "index.ts"
   ],
   "exclude": [
     "__tests__",
