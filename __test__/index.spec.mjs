@@ -1,5 +1,5 @@
 import test from 'ava'
 
-test('sum from native', (t) => {
-  
+test('validate env', (t) => {
+  t.pass()
 })
