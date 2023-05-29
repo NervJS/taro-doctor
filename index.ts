@@ -36,7 +36,7 @@ export default (ctx) => {
   })
 }
 
-async function validateEslint(projectConfig, chalk) {
+export async function validateEslint(projectConfig, chalk) {
   const appPath = process.cwd()
   const globPattern = glob.sync(path.join(appPath, '.eslintrc*'))
 
@@ -52,10 +52,13 @@ async function validateEslint(projectConfig, chalk) {
   const report = await eslintCli.lintFiles([sourceFiles])
   const formatter = await eslintCli.loadFormatter()
   const rawReport = formatter.format(report)
+  let is_valid = true
   console.log(`\u{1F3AF} 检查 ESLint (以下为 ESLint 的输出)！`)
   if (rawReport) {
+    is_valid = false
     console.log(rawReport)
   } else {
     console.log(`${chalk.green('[\u{2713}]')} Eslint 检查通过！`)
   }
+  return is_valid
 }

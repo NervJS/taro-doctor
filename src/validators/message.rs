@@ -2,7 +2,7 @@ use std::{fmt, error::Error};
 
 use console::{style};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum MessageKind {
   Info,
   Error,

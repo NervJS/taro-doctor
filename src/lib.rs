@@ -2,7 +2,7 @@
 
 mod validators;
 
-use std::{ fs, error::Error, path::PathBuf, env, process::Command };
+use std::{ fs, error::Error, path::PathBuf, env };
 
 use validators::{env::EnvValidator, recommend::RecommendValidator};
 
@@ -12,59 +12,62 @@ use crate::validators::{ message::{ Message, MessageKind }, package::{ PackageVa
 extern crate napi_derive;
 
 #[napi]
-pub fn validate_config(config_str: String) {
+pub fn validate_config(config_str: String) -> bool {
   let result = validate_config_core(config_str);
-  if let Err(e) = result {
-    println!("{}", Message { kind: MessageKind::Error, content: e.to_string(), solution: None });
-  }
+  let is_valid = match result {
+    Ok(is_valid) => is_valid,
+    Err(e) => {
+      println!("{}", Message { kind: MessageKind::Error, content: e.to_string(), solution: None });
+      false
+    }
+  };
   println!("");
+  return is_valid;
 }
 
 #[napi]
-pub fn validate_package(app_path: String, node_modules_path: String) {
+pub fn validate_package(app_path: String, node_modules_path: String) -> bool {
   let result = validate_package_core(app_path, node_modules_path);
-  if let Err(e) = result {
-    println!("{}", Message { kind: MessageKind::Error, content: e.to_string(), solution: None });
-  }
+  let is_valid = match result {
+    Ok(is_valid) => is_valid,
+    Err(e) => {
+      println!("{}", Message { kind: MessageKind::Error, content: e.to_string(), solution: None });
+      false
+    }
+  };
   println!("");
+  return is_valid;
 }
 
 #[napi]
-pub fn validate_env() {
+pub fn validate_env() -> bool {
   let result = validate_env_core();
-  if let Err(e) = result {
-    println!("{}", Message { kind: MessageKind::Error, content: e.to_string(), solution: None });
-  }
+  let is_valid = match result {
+    Ok(is_valid) => is_valid,
+    Err(e) => {
+      println!("{}", Message { kind: MessageKind::Error, content: e.to_string(), solution: None });
+      false
+    }
+  };
   println!("");
+  return is_valid;
 }
 
 #[napi]
-pub fn validate_recommend(app_path: String) {
+pub fn validate_recommend(app_path: String) -> bool {
   let result = validate_recommend_core(app_path);
-  if let Err(e) = result {
-    println!("{}", Message { kind: MessageKind::Error, content: e.to_string(), solution: None });
-  }
+  let is_valid = match result {
+    Ok(is_valid) => is_valid,
+    Err(e) => {
+      println!("{}", Message { kind: MessageKind::Error, content: e.to_string(), solution: None });
+      false
+    }
+  };
   println!("");
+  return is_valid;
 }
 
-#[napi]
-pub fn validate_eslint() {
-  let mut command = Command::new("npm");
-  command.arg("run");
-  command.arg("eslint");
-
-  let output = command.output().expect("failed to execute eslint");
-
-  if output.status.success() {
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    println!("Command output: {}", stdout);
-  } else {
-    let stderr = String::from_utf8_lossy(&output.stdout);
-    eprintln!("Command failed: {}", stderr);
-  }
-}
-
-fn validate_config_core(config_str: String) -> Result<(), Box<dyn Error>> {
+fn validate_config_core(config_str: String) -> Result<bool, Box<dyn Error>> {
   let tip = Message {
     kind: MessageKind::Info,
     content: String::from("验证项目配置配置！"),
@@ -90,17 +93,19 @@ fn validate_config_core(config_str: String) -> Result<(), Box<dyn Error>> {
       }
     ]
   };
+  let mut result = true;
   if messages.len() > 0 {
     for message in messages {
       println!("{}", message);
     }
+    result = false;
   } else {
     println!("{}", Message { kind: MessageKind::Success, content: "项目配置正确！".to_string(), solution: None });
   }
-  Ok(())
+  Ok(result)
 }
 
-fn validate_package_core(app_path: String, node_modules_path: String) -> Result<(), Box<dyn Error>> {
+fn validate_package_core(app_path: String, node_modules_path: String) -> Result<bool, Box<dyn Error>> {
   let tip = Message {
     kind: MessageKind::Info,
     content: String::from("验证项目依赖安装正确性！"),
@@ -122,28 +127,36 @@ fn validate_package_core(app_path: String, node_modules_path: String) -> Result<
       }
     ]
   };
+  let mut result = true;
   for message in messages {
     println!("{}", message);
+    if message.kind == MessageKind::Error {
+      result = false;
+    }
   }
-  Ok(())
+  Ok(result)
 }
 
-fn validate_env_core() -> Result<(), Box<dyn Error>> {
+fn validate_env_core() -> Result<bool, Box<dyn Error>> {
   let tip = Message {
     kind: MessageKind::Info,
     content: String::from("验证环境信息！"),
     solution: None
   };
   println!("{}", tip);
+  let mut result = true;
   let env_validator = EnvValidator::build();
   let messages = env_validator.validate();
   for message in messages {
     println!("{}", message);
+    if message.kind == MessageKind::Error {
+      result = false;
+    }
   }
-  Ok(())
+  Ok(result)
 }
 
-fn validate_recommend_core(app_path: String) -> Result<(), Box<dyn Error>> {
+fn validate_recommend_core(app_path: String) -> Result<bool, Box<dyn Error>> {
   let tip = Message {
     kind: MessageKind::Info,
     content: String::from("验证最佳实践！"),
@@ -161,13 +174,16 @@ fn validate_recommend_core(app_path: String) -> Result<(), Box<dyn Error>> {
       }
     ]
   };
-
+  let mut result = true;
   if messages.len() > 0 {
     for message in messages {
       println!("{}", message);
+      if message.kind == MessageKind::Error {
+        result = false;
+      }
     }
   } else {
     println!("{}", Message { kind: MessageKind::Success, content: "项目符合最佳实践要求！".to_string(), solution: None });
   }
-  Ok(())
+  Ok(result)
 }
