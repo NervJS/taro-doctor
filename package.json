@@ -1,10 +1,9 @@
 {
-  "name": "@tarojs/doctor",
-  "version": "0.0.0",
+  "name": "@tarojs/plugin-doctor",
+  "version": "0.0.1",
   "main": "index.js",
-  "types": "index.d.ts",
   "napi": {
-    "name": "doctor",
+    "name": "taro-doctor",
     "triples": {
       "additional": [
         "aarch64-apple-darwin",
@@ -15,10 +14,24 @@
       ]
     }
   },
+  "files": [
+    "index.js",
+    "js-binding.js",
+    "js-binding.d.ts"
+  ],
   "license": "MIT",
+  "dependencies": {
+    "@tarojs/service": "3.6.7",
+    "eslint": "8.41.0"
+  },
   "devDependencies": {
     "@napi-rs/cli": "^2.15.2",
-    "ava": "^5.1.1"
+    "@types/node": "20.2.5",
+    "ava": "^5.1.1",
+    "conventional-changelog-cli": "2.2.2",
+    "npm-run-all": "4.1.5",
+    "prettier": "2.8.8",
+    "typescript": "5.0.4"
   },
   "ava": {
     "timeout": "3m"
@@ -28,11 +41,21 @@
   },
   "scripts": {
     "artifacts": "napi artifacts",
-    "build": "napi build --platform --release",
-    "build:debug": "napi build --platform",
+    "build": "napi build --platform --release --js js-binding.js --dts js-binding.d.ts && tsc index.ts",
+    "build:debug": "napi build --platform --js js-binding.js --dts js-binding.d.ts && tsc index.ts",
     "prepublishOnly": "napi prepublish -t npm",
     "test": "ava",
     "universal": "napi universal",
-    "version": "napi version"
+    "format": "run-p format:source format:rs",
+    "format:rs": "cargo fmt",
+    "format:source": "prettier . -w",
+    "version": "napi version  && conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "semi": false,
+    "trailingComma": "all",
+    "singleQuote": true,
+    "arrowParens": "always"
   }
 }

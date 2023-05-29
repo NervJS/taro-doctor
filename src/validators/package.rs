@@ -1,6 +1,7 @@
-use std::{ cmp::Ordering };
+use std::{ process::Command };
 
 use jsonschema::ValidationError;
+use regex::Regex;
 use serde_json::{ self, Value, from_str };
 
 use crate::validators::common::get_package_info;
@@ -66,13 +67,12 @@ const UPDATE_PACKAGE_LIST: [&str; 53] = [
 pub struct PackageValidator<'a>{
   pub json: Value,
   pub node_modules_path: &'a str,
-  pub cli_version: &'a str
 }
 
 impl<'a> PackageValidator<'a> {
-  pub fn build(package_str: &str, node_modules_path: &'a str, cli_version: &'a str) -> Result<Self, ValidationError<'static>> {
+  pub fn build(package_str: &str, node_modules_path: &'a str) -> Result<Self, ValidationError<'static>> {
     let package_json = from_str(package_str)?;
-    Ok(Self { json: package_json, node_modules_path, cli_version })
+    Ok(Self { json: package_json, node_modules_path })
   }
 
   pub fn get_taro_packages(&self) -> Vec<&String> {
@@ -104,13 +104,53 @@ impl<'a> Validator for PackageValidator<'a> {
     let mut messages: Vec<Message> = vec![];
     let taro_packages = self.get_taro_packages();
     messages.push(Message { kind: MessageKind::Manual, content: "本地安装的 Taro 相关依赖版本信息如下：".to_string(), solution: None });
-    let cli_version = self.cli_version;
+    let local_cli = get_package_info(self.node_modules_path, "@tarojs/cli");
+    let mut _is_use_local = false;
+    let cli_version = match local_cli {
+      Ok(info) => {
+        _is_use_local = true;
+        info.version
+      },
+      Err(_) => {
+        let output = Command::new("taro")
+          .arg("--version")
+          .output();
+        let version = match output {
+          Ok(output) => {
+            let mut version = "".to_string();
+            if output.status.success() {
+              let output_str = String::from_utf8_lossy(&output.stdout);
+              let parts: Vec<&str> = output_str.as_ref().split('\n').collect();
+              let re = Regex::new(r"v(\d+\.\d+\.\d+)").unwrap();
+              for p in parts.into_iter() {
+                if let Some(captures) = re.captures(p) {
+                  if let Some(v) = captures.get(1) {
+                    version = v.as_str().to_string();
+                    break;
+                  }
+                }
+              }
+              version
+            } else {
+              version
+            }
+          },
+          Err(_) => "".to_string()
+        };
+        _is_use_local = false;
+        version
+      }
+    };
+    if _is_use_local {
+      messages.push(Message { kind: MessageKind::Warning, content: format!("本地已经安装了 Taro CLI 版本为 {}，建议使用 npm script 来执行项目的预览和打包", cli_version), solution: None });
+    }
+    
     for p in taro_packages {
       let package_info = get_package_info(self.node_modules_path, p);
       match package_info {
         Ok(info) => {
           messages.push(Message { kind: MessageKind::Manual, content: format!("- {}: {}", info.name, info.version), solution: None });
-          if UPDATE_PACKAGE_LIST.contains(&p.as_str()) && cli_version != info.version {
+          if !cli_version.is_empty() && UPDATE_PACKAGE_LIST.contains(&p.as_str()) && cli_version != info.version {
             messages.push(Message { kind: MessageKind::Error, content: format!("依赖 {} ({}) 与当前使用的 Taro CLI ({}) 版本不一致, 请更新为统一的版本", p, info.version, cli_version), solution: None });
           }
         },
@@ -119,16 +159,12 @@ impl<'a> Validator for PackageValidator<'a> {
         }
       }
     }
-    messages.sort_by(|a, b| {
-      match (&a.kind, &b.kind) {
-        (MessageKind::Manual, MessageKind::Manual) => Ordering::Equal,
-        (MessageKind::Manual, _) => Ordering::Less,
-        (_, MessageKind::Manual) => Ordering::Greater,
-        (MessageKind::Error, MessageKind::Error) => Ordering::Equal,
-        (MessageKind::Error, _) => Ordering::Greater,
-        (_, MessageKind::Error) => Ordering::Less,
-        _ => Ordering::Equal,
-      }
+    messages.sort_by_key(|message| match message.kind {
+      MessageKind::Info => 0,
+      MessageKind::Warning => 1,
+      MessageKind::Manual => 2,
+      MessageKind::Success => 3,
+      MessageKind::Error => 4,
     });
     messages
   }

@@ -20,8 +20,8 @@ pub fn validate_config(config_str: String) {
 }
 
 #[napi]
-pub fn validate_package(app_path: String, node_modules_path: String, cli_version: String) {
-  let result = validate_package_core(app_path, node_modules_path, cli_version);
+pub fn validate_package(app_path: String, node_modules_path: String) {
+  let result = validate_package_core(app_path, node_modules_path);
   if let Err(e) = result {
     println!("{}", Message { kind: MessageKind::Error, content: e.to_string(), solution: None });
   }
@@ -96,7 +96,7 @@ fn validate_config_core(config_str: String) -> Result<(), Box<dyn Error>> {
   Ok(())
 }
 
-fn validate_package_core(app_path: String, node_modules_path: String, cli_version: String) -> Result<(), Box<dyn Error>> {
+fn validate_package_core(app_path: String, node_modules_path: String) -> Result<(), Box<dyn Error>> {
   let tip = Message {
     kind: MessageKind::Info,
     content: String::from("验证项目依赖安装正确性！"),
@@ -107,7 +107,7 @@ fn validate_package_core(app_path: String, node_modules_path: String, cli_versio
   path.push(app_path);
   path.push("package.json");
   let package_str = fs::read_to_string(path.as_path())?;
-  let package_validator_result = PackageValidator::build(&package_str, &node_modules_path, &cli_version);
+  let package_validator_result = PackageValidator::build(&package_str, &node_modules_path);
   let messages = match package_validator_result {
     Ok(package_validator) => package_validator.validate(),
     Err(e) => vec![
