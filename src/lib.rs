@@ -2,9 +2,9 @@
 
 mod validators;
 
-use std::{ fs, error::Error, path::PathBuf, env };
+use std::{ fs, error::Error, path::PathBuf, env, process::Command };
 
-use validators::{env::EnvValidator, Recommend::RecommendValidator};
+use validators::{env::EnvValidator, recommend::RecommendValidator};
 
 use crate::validators::{ message::{ Message, MessageKind }, package::{ PackageValidator }, config::ConfigValidator, common::{ Validator } };
 
@@ -40,6 +40,23 @@ pub fn validate_recommend(app_path: String) {
   let result = validate_recommend_core(app_path);
   if let Err(e) = result {
     println!("{}", Message { kind: MessageKind::Error, content: e.to_string(), solution: None });
+  }
+}
+
+#[napi]
+pub fn validate_eslint() {
+  let mut command = Command::new("npm");
+  command.arg("run");
+  command.arg("eslint");
+
+  let output = command.output().expect("failed to execute eslint");
+
+  if output.status.success() {
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    println!("Command output: {}", stdout);
+  } else {
+    let stderr = String::from_utf8_lossy(&output.stdout);
+    eprintln!("Command failed: {}", stderr);
   }
 }
 
@@ -140,8 +157,13 @@ fn validate_recommend_core(app_path: String) -> Result<(), Box<dyn Error>> {
       }
     ]
   };
-  for message in messages {
-    println!("{}", message);
+
+  if messages.len() > 0 {
+    for message in messages {
+      println!("{}", message);
+    }
+  } else {
+    println!("{}", Message { kind: MessageKind::Success, content: "项目符合最佳实践要求！".to_string(), solution: None });
   }
   Ok(())
 }

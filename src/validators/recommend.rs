@@ -93,7 +93,6 @@ impl<'a> Validator for RecommendValidator<'a> {
         let mut app_path = self.app_path.to_string();
         app_path.push(MAIN_SEPARATOR);
         let file_list: HashSet<String> = file_list.into_iter().map(|key: PathBuf| key.into_os_string().into_string().unwrap().replace(&app_path, "").to_lowercase()).into_iter().collect();
-        println!("{:?}", file_list);
         let readme_list: HashSet<String> = README.map(|key| key.to_lowercase()).into_iter().collect();
         let gitignore_list: HashSet<String> = GITIGNORE.map(|key| key.to_lowercase()).into_iter().collect();
         let editorconfig_list: HashSet<String> = EDITORCONFIG.map(|key| key.to_lowercase()).into_iter().collect();
