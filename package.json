@@ -15,6 +15,7 @@
     }
   },
   "files": [
+    "src/validators/config_schema.json",
     "index.js",
     "js-binding.js",
     "js-binding.d.ts"
