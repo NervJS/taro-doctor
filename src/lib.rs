@@ -17,6 +17,7 @@ pub fn validate_config(config_str: String) {
   if let Err(e) = result {
     println!("{}", Message { kind: MessageKind::Error, content: e.to_string(), solution: None });
   }
+  println!("");
 }
 
 #[napi]
@@ -25,6 +26,7 @@ pub fn validate_package(app_path: String, node_modules_path: String) {
   if let Err(e) = result {
     println!("{}", Message { kind: MessageKind::Error, content: e.to_string(), solution: None });
   }
+  println!("");
 }
 
 #[napi]
@@ -33,6 +35,7 @@ pub fn validate_env() {
   if let Err(e) = result {
     println!("{}", Message { kind: MessageKind::Error, content: e.to_string(), solution: None });
   }
+  println!("");
 }
 
 #[napi]
@@ -41,6 +44,7 @@ pub fn validate_recommend(app_path: String) {
   if let Err(e) = result {
     println!("{}", Message { kind: MessageKind::Error, content: e.to_string(), solution: None });
   }
+  println!("");
 }
 
 #[napi]

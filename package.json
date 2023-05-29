@@ -22,7 +22,8 @@
   "license": "MIT",
   "dependencies": {
     "@tarojs/service": "3.6.7",
-    "eslint": "8.41.0"
+    "eslint": "8.41.0",
+    "glob": "10.2.6"
   },
   "devDependencies": {
     "@napi-rs/cli": "^2.15.2",

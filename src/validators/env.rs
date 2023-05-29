@@ -27,7 +27,7 @@ impl Validator for EnvValidator {
             if ordering == Ordering::Greater || ordering == Ordering::Equal {
               Message {
                 kind: MessageKind::Success,
-                content: format!("安装的 Node 版本为 {}", version),
+                content: format!("安装的 Node 版本为 {}", version.replace("\n", "")),
                 solution: None
               }
             } else {
