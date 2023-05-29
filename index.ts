@@ -11,8 +11,8 @@ import {
 } from './js-binding'
 
 export default (ctx) => {
-	ctx.registerCommand({
-    name: 'dd',
+  ctx.registerCommand({
+    name: 'doctor',
     async fn() {
       const { appPath, nodeModulesPath, configPath } = ctx.paths
       const { fs, chalk, PROJECT_CONFIG } = ctx.helper
