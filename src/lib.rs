@@ -4,7 +4,7 @@ mod validators;
 
 use std::{ fs, error::Error, path::PathBuf };
 
-use validators::{env::EnvValidator, recommend::RecommendValidator};
+use validators::{ env::EnvValidator, recommend::RecommendValidator };
 
 use crate::validators::{ message::{ Message, MessageKind }, package::{ PackageValidator }, config::ConfigValidator, common::{ Validator } };
 
@@ -70,7 +70,7 @@ pub fn validate_recommend(app_path: String) -> bool {
 fn validate_config_core(config_str: String) -> Result<bool, Box<dyn Error>> {
   let tip = Message {
     kind: MessageKind::Info,
-    content: String::from("验证项目配置配置！"),
+    content: String::from("验证项目配置 (/config/index.js) ！"),
     solution: None
   };
   println!("{}", tip);
