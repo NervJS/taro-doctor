@@ -252,9 +252,14 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
-const { validateConfig, validatePackage, validateEnv, validateRecommend } = nativeBinding
+const { MessageKind, validateConfig, validateConfigPrint, validatePackage, validatePackagePrint, validateEnv, validateEnvPrint, validateRecommend, validateRecommendPrint } = nativeBinding
 
+module.exports.MessageKind = MessageKind
 module.exports.validateConfig = validateConfig
+module.exports.validateConfigPrint = validateConfigPrint
 module.exports.validatePackage = validatePackage
+module.exports.validatePackagePrint = validatePackagePrint
 module.exports.validateEnv = validateEnv
+module.exports.validateEnvPrint = validateEnvPrint
 module.exports.validateRecommend = validateRecommend
+module.exports.validateRecommendPrint = validateRecommendPrint

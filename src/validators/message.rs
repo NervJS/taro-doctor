@@ -1,8 +1,10 @@
 use std::{error::Error, fmt};
 
 use console::style;
+use napi::bindgen_prelude::{FromNapiValue, ToNapiValue};
 
 #[derive(Debug, PartialEq)]
+#[napi]
 pub enum MessageKind {
   Info,
   Error,
@@ -12,10 +14,17 @@ pub enum MessageKind {
 }
 
 #[derive(Debug)]
+#[napi(object)]
 pub struct Message {
   pub kind: MessageKind,
   pub content: String,
   pub solution: Option<String>,
+}
+
+#[napi(object)]
+pub struct ValidateResult {
+  pub is_valid: bool,
+  pub messages: Vec<Message>,
 }
 
 impl fmt::Display for Message {
