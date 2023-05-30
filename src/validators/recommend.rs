@@ -1,14 +1,30 @@
-use std::{error::Error, collections::HashSet, fs, path::{PathBuf, MAIN_SEPARATOR}};
+use std::{
+  collections::HashSet,
+  error::Error,
+  fs,
+  path::{PathBuf, MAIN_SEPARATOR},
+};
 
-use serde_json::{ self, Value };
+use serde_json::{self, Value};
 
-use super::{ common::{Validator, get_package_info}, message::{ Message, MessageKind } };
+use super::{
+  common::{get_package_info, Validator},
+  message::{Message, MessageKind},
+};
 
 const TEST_FRAMEWORKS: [&str; 6] = ["jest", "mocha", "ava", "tape", "jesmine", "karma"];
 const LINTERS: [&str; 4] = ["eslint", "jslint", "tslint", "jshint"];
 const README: [&str; 3] = ["readme", "readme.md", "readme.markdown"];
 const GITIGNORE: [&str; 1] = [".gitignore"];
-const EDITORCONFIG: [&str; 7] = [".editorconfig", "editorconfig", ".prettierrc", ".prettierrc.json", ".prettierrc.yml", ".prettierrc.js", "prettier.config.js"];
+const EDITORCONFIG: [&str; 7] = [
+  ".editorconfig",
+  "editorconfig",
+  ".prettierrc",
+  ".prettierrc.json",
+  ".prettierrc.yml",
+  ".prettierrc.js",
+  "prettier.config.js",
+];
 
 pub struct RecommendValidator<'a> {
   pub app_path: &'a str,
@@ -18,12 +34,10 @@ pub struct RecommendValidator<'a> {
 impl<'a> RecommendValidator<'a> {
   pub fn build(app_path: &'a str) -> Result<Self, Box<dyn Error>> {
     let package_info = get_package_info(app_path, "")?;
-    Ok(
-      Self {
-        app_path,
-        json: package_info.json
-      }
-    )
+    Ok(Self {
+      app_path,
+      json: package_info.json,
+    })
   }
 }
 
@@ -36,8 +50,15 @@ impl<'a> Validator for RecommendValidator<'a> {
     let mut has_test_framework = false;
     let mut has_linter = false;
     if let Value::Object(dev_dependencies_map) = dev_dependencies {
-      let dev_dependencies: HashSet<String> = dev_dependencies_map.keys().map(|key| key.to_lowercase()).into_iter().collect();
-      let test_frameworks: HashSet<String> = TEST_FRAMEWORKS.map(|key| key.to_lowercase()).into_iter().collect();
+      let dev_dependencies: HashSet<String> = dev_dependencies_map
+        .keys()
+        .map(|key| key.to_lowercase())
+        .into_iter()
+        .collect();
+      let test_frameworks: HashSet<String> = TEST_FRAMEWORKS
+        .map(|key| key.to_lowercase())
+        .into_iter()
+        .collect();
       let linters: HashSet<String> = LINTERS.map(|key| key.to_lowercase()).into_iter().collect();
       if is_intersecting(&dev_dependencies, &test_frameworks) {
         has_test_framework = true;
@@ -46,7 +67,7 @@ impl<'a> Validator for RecommendValidator<'a> {
         has_linter = true;
       }
     }
-    
+
     if !has_test_framework {
       messages.push(
         Message {
@@ -78,13 +99,12 @@ impl<'a> Validator for RecommendValidator<'a> {
               if path.is_file() {
                 file_list.push(path);
               }
-              
-            },
-            Err(e) => {
-              messages.push(
-                Message { kind: MessageKind::Error, content: e.to_string(), solution: None }
-              )
             }
+            Err(e) => messages.push(Message {
+              kind: MessageKind::Error,
+              content: e.to_string(),
+              solution: None,
+            }),
           }
         }
         let mut has_readme = false;
@@ -92,11 +112,29 @@ impl<'a> Validator for RecommendValidator<'a> {
         let mut has_editorconfig = false;
         let mut app_path = self.app_path.to_string();
         app_path.push(MAIN_SEPARATOR);
-        let file_list: HashSet<String> = file_list.into_iter().map(|key: PathBuf| key.into_os_string().into_string().unwrap().replace(&app_path, "").to_lowercase()).into_iter().collect();
-        let readme_list: HashSet<String> = README.map(|key| key.to_lowercase()).into_iter().collect();
-        let gitignore_list: HashSet<String> = GITIGNORE.map(|key| key.to_lowercase()).into_iter().collect();
-        let editorconfig_list: HashSet<String> = EDITORCONFIG.map(|key| key.to_lowercase()).into_iter().collect();
-        
+        let file_list: HashSet<String> = file_list
+          .into_iter()
+          .map(|key: PathBuf| {
+            key
+              .into_os_string()
+              .into_string()
+              .unwrap()
+              .replace(&app_path, "")
+              .to_lowercase()
+          })
+          .into_iter()
+          .collect();
+        let readme_list: HashSet<String> =
+          README.map(|key| key.to_lowercase()).into_iter().collect();
+        let gitignore_list: HashSet<String> = GITIGNORE
+          .map(|key| key.to_lowercase())
+          .into_iter()
+          .collect();
+        let editorconfig_list: HashSet<String> = EDITORCONFIG
+          .map(|key| key.to_lowercase())
+          .into_iter()
+          .collect();
+
         if is_intersecting(&file_list, &readme_list) {
           has_readme = true;
         }
@@ -136,13 +174,13 @@ impl<'a> Validator for RecommendValidator<'a> {
             }
           )
         }
-      },
-      Err(e) => {
-        messages.push(
-          Message { kind: MessageKind::Error, content: e.to_string(), solution: None }
-        )
       }
-    } 
+      Err(e) => messages.push(Message {
+        kind: MessageKind::Error,
+        content: e.to_string(),
+        solution: None,
+      }),
+    }
 
     messages
   }

@@ -1,12 +1,15 @@
-use std::{ process::Command };
+use std::process::Command;
 
 use jsonschema::ValidationError;
 use regex::Regex;
-use serde_json::{ self, Value, from_str };
+use serde_json::{self, from_str, Value};
 
 use crate::validators::common::get_package_info;
 
-use super::{ message::{ Message, MessageKind }, common::Validator };
+use super::{
+  common::Validator,
+  message::{Message, MessageKind},
+};
 
 const UPDATE_PACKAGE_LIST: [&str; 53] = [
   "babel-plugin-transform-react-jsx-to-rn-stylesheet",
@@ -64,15 +67,21 @@ const UPDATE_PACKAGE_LIST: [&str; 53] = [
   "@tarojs/webpack5-prebundle",
 ];
 
-pub struct PackageValidator<'a>{
+pub struct PackageValidator<'a> {
   pub json: Value,
   pub node_modules_path: &'a str,
 }
 
 impl<'a> PackageValidator<'a> {
-  pub fn build(package_str: &str, node_modules_path: &'a str) -> Result<Self, ValidationError<'static>> {
+  pub fn build(
+    package_str: &str,
+    node_modules_path: &'a str,
+  ) -> Result<Self, ValidationError<'static>> {
     let package_json = from_str(package_str)?;
-    Ok(Self { json: package_json, node_modules_path })
+    Ok(Self {
+      json: package_json,
+      node_modules_path,
+    })
   }
 
   pub fn get_taro_packages(&self) -> Vec<&String> {
@@ -94,7 +103,7 @@ impl<'a> PackageValidator<'a> {
         }
       }
     }
-    
+
     taro_packages
   }
 }
@@ -103,18 +112,20 @@ impl<'a> Validator for PackageValidator<'a> {
   fn validate(&self) -> Vec<Message> {
     let mut messages: Vec<Message> = vec![];
     let taro_packages = self.get_taro_packages();
-    messages.push(Message { kind: MessageKind::Manual, content: "本地安装的 Taro 相关依赖版本信息如下：".to_string(), solution: None });
+    messages.push(Message {
+      kind: MessageKind::Manual,
+      content: "本地安装的 Taro 相关依赖版本信息如下：".to_string(),
+      solution: None,
+    });
     let local_cli = get_package_info(self.node_modules_path, "@tarojs/cli");
     let mut _is_use_local = false;
     let cli_version = match local_cli {
       Ok(info) => {
         _is_use_local = true;
         info.version
-      },
+      }
       Err(_) => {
-        let output = Command::new("taro")
-          .arg("--version")
-          .output();
+        let output = Command::new("taro").arg("--version").output();
         let version = match output {
           Ok(output) => {
             let mut version = "".to_string();
@@ -134,28 +145,53 @@ impl<'a> Validator for PackageValidator<'a> {
             } else {
               version
             }
-          },
-          Err(_) => "".to_string()
+          }
+          Err(_) => "".to_string(),
         };
         _is_use_local = false;
         version
       }
     };
     if _is_use_local {
-      messages.push(Message { kind: MessageKind::Warning, content: format!("本地已经安装了 Taro CLI 版本为 {}，建议使用 npm script 来执行项目的预览和打包", cli_version), solution: None });
+      messages.push(Message {
+        kind: MessageKind::Warning,
+        content: format!(
+          "本地已经安装了 Taro CLI 版本为 {}，建议使用 npm script 来执行项目的预览和打包",
+          cli_version
+        ),
+        solution: None,
+      });
     }
-    
+
     for p in taro_packages {
       let package_info = get_package_info(self.node_modules_path, p);
       match package_info {
         Ok(info) => {
-          messages.push(Message { kind: MessageKind::Manual, content: format!("- {}: {}", info.name, info.version), solution: None });
-          if !cli_version.is_empty() && UPDATE_PACKAGE_LIST.contains(&p.as_str()) && cli_version != info.version {
-            messages.push(Message { kind: MessageKind::Error, content: format!("依赖 {} ({}) 与当前使用的 Taro CLI ({}) 版本不一致, 请更新为统一的版本", p, info.version, cli_version), solution: None });
+          messages.push(Message {
+            kind: MessageKind::Manual,
+            content: format!("- {}: {}", info.name, info.version),
+            solution: None,
+          });
+          if !cli_version.is_empty()
+            && UPDATE_PACKAGE_LIST.contains(&p.as_str())
+            && cli_version != info.version
+          {
+            messages.push(Message {
+              kind: MessageKind::Error,
+              content: format!(
+                "依赖 {} ({}) 与当前使用的 Taro CLI ({}) 版本不一致, 请更新为统一的版本",
+                p, info.version, cli_version
+              ),
+              solution: None,
+            });
           }
-        },
+        }
         Err(_) => {
-          messages.push(Message { kind: MessageKind::Error, content: format!("请安装 Taro 依赖: {}", p), solution: None });
+          messages.push(Message {
+            kind: MessageKind::Error,
+            content: format!("请安装 Taro 依赖: {}", p),
+            solution: None,
+          });
         }
       }
     }

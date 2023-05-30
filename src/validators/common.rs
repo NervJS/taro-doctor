@@ -1,4 +1,4 @@
-use std::{error::Error, path::PathBuf, fs, cmp::Ordering};
+use std::{cmp::Ordering, error::Error, fs, path::PathBuf};
 
 use serde_json::{from_str, Value};
 
@@ -14,7 +14,10 @@ pub struct PackageInfo {
   pub json: Value,
 }
 
-pub fn get_package_info(node_modules_path: &str, name: &str) -> Result<PackageInfo, Box<dyn Error>> {
+pub fn get_package_info(
+  node_modules_path: &str,
+  name: &str,
+) -> Result<PackageInfo, Box<dyn Error>> {
   let mut package_path = PathBuf::new();
   let mut name_arr = vec![];
   if name.contains('/') {
@@ -30,26 +33,21 @@ pub fn get_package_info(node_modules_path: &str, name: &str) -> Result<PackageIn
   let package_str = fs::read_to_string(package_path.as_path())?;
   let package_json_re = from_str::<Value>(&package_str);
   match package_json_re {
-    Ok(package_json) => {
-      Ok(
-        PackageInfo {
-          name: name.to_string(), 
-          version: package_json.get("version").unwrap().as_str().unwrap().to_string(),
-          json: package_json
-        }
-      )
-    },
-    Err(e) => {
-      Err(
-        Box::new(
-          Message {
-            kind: MessageKind::Error,
-            content: e.to_string(),
-            solution: None
-          }
-        )
-      )
-    }
+    Ok(package_json) => Ok(PackageInfo {
+      name: name.to_string(),
+      version: package_json
+        .get("version")
+        .unwrap()
+        .as_str()
+        .unwrap()
+        .to_string(),
+      json: package_json,
+    }),
+    Err(e) => Err(Box::new(Message {
+      kind: MessageKind::Error,
+      content: e.to_string(),
+      solution: None,
+    })),
   }
 }
 

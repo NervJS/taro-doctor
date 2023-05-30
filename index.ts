@@ -3,12 +3,7 @@ import * as path from 'path'
 import { ESLint } from 'eslint'
 import * as glob from 'glob'
 
-import {
-  validateEnv,
-  validateConfig,
-  validatePackage,
-  validateRecommend
-} from './js-binding'
+import { validateEnv, validateConfig, validatePackage, validateRecommend } from './js-binding'
 
 export default (ctx) => {
   ctx.registerCommand({
@@ -44,8 +39,8 @@ export async function validateEslint(projectConfig, chalk) {
     cwd: process.cwd(),
     useEslintrc: Boolean(globPattern.length),
     baseConfig: {
-      extends: [`taro/${projectConfig.framework}`]
-    }
+      extends: [`taro/${projectConfig.framework}`],
+    },
   })
 
   const sourceFiles = path.join(process.cwd(), projectConfig.sourceRoot, '**/*.{js,ts,jsx,tsx}')

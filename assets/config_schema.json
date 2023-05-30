@@ -110,15 +110,12 @@
                   "type": "string"
                 }
               },
-              "transform":  {
+              "transform": {
                 "type": "string",
                 "pattern": "^__function__$"
               }
             },
-            "required": [
-              "from",
-              "to"
-            ],
+            "required": ["from", "to"],
             "additionalProperties": false
           }
         },
@@ -139,32 +136,20 @@
     },
     "framework": {
       "type": "string",
-      "enum": [
-        "nerv",
-        "react",
-        "preact",
-        "vue",
-        "vue3"
-      ]
+      "enum": ["nerv", "react", "preact", "vue", "vue3"]
     },
     "compiler": {
       "oneOf": [
         {
           "type": "string",
-          "enum": [
-            "webpack4",
-            "webpack5"
-          ]
+          "enum": ["webpack4", "webpack5"]
         },
         {
           "type": "object",
           "properties": {
             "type": {
               "type": "string",
-              "enum": [
-                "webpack4",
-                "webpack5"
-              ]
+              "enum": ["webpack4", "webpack5"]
             },
             "prebundle": {
               "type": "object",
@@ -208,7 +193,7 @@
                   "properties": {
                     "provide": {
                       "type": "array",
-                      "items":  {
+                      "items": {
                         "type": "string",
                         "pattern": "^__function__$"
                       }
@@ -226,18 +211,11 @@
     },
     "jsMinimizer": {
       "type": "string",
-      "enum": [
-        "terser",
-        "esbuild"
-      ]
+      "enum": ["terser", "esbuild"]
     },
     "cssMinimizer": {
       "type": "string",
-      "enum": [
-        "csso",
-        "esbuild",
-        "parcelCss"
-      ]
+      "enum": ["csso", "esbuild", "parcelCss"]
     },
     "cache": {
       "type": "object",
@@ -315,7 +293,7 @@
           },
           "additionalProperties": false
         },
-        "webpackChain":  {
+        "webpackChain": {
           "type": "string",
           "pattern": "^__function__$"
         },
@@ -333,7 +311,7 @@
             }
           ]
         },
-        "addChunkPages":  {
+        "addChunkPages": {
           "type": "string",
           "pattern": "^__function__$"
         },
@@ -654,7 +632,7 @@
           "properties": {},
           "additionalProperties": true
         },
-        "webpackChain":  {
+        "webpackChain": {
           "type": "string",
           "pattern": "^__function__$"
         },
@@ -668,11 +646,7 @@
           "properties": {
             "mode": {
               "type": "string",
-              "enum": [
-                "hash",
-                "browser",
-                "multi"
-              ]
+              "enum": ["hash", "browser", "multi"]
             },
             "customRoutes": {
               "type": "object",
@@ -983,11 +957,6 @@
       }
     }
   },
-  "required": [
-    "projectName",
-    "sourceRoot",
-    "outputRoot",
-    "framework"
-  ],
+  "required": ["projectName", "sourceRoot", "outputRoot", "framework"],
   "additionalProperties": true
 }
