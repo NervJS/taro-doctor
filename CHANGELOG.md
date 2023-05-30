@@ -1,3 +1,18 @@
+## [0.0.4](https://github.com/NervJS/taro-doctor/compare/0.0.3...0.0.4) (2023-05-30)
+
+
+### Bug Fixes
+
+* 更新生成的 binding 文件 ([158d5af](https://github.com/NervJS/taro-doctor/commit/158d5af3580e138ac317a932c0ef862ac6c149f6))
+* 修正 title ([7353841](https://github.com/NervJS/taro-doctor/commit/735384161ee2d09ae85be153faaa2131de0d2957))
+
+
+### Features
+
+* 区分 print 和非 print 方法 ([1e46e8a](https://github.com/NervJS/taro-doctor/commit/1e46e8a6c5cd2b4a3655b14c4aebd033039bd69f))
+
+
+
 ## [0.0.3](https://github.com/NervJS/taro-doctor/compare/0.0.2...0.0.3) (2023-05-30)
 
 ### Bug Fixes
