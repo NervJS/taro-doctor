@@ -5,6 +5,7 @@
     "removeComments": false,
     "preserveConstEnums": false,
     "moduleResolution": "node",
+    "declaration": true,
     "experimentalDecorators": true,
     "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
