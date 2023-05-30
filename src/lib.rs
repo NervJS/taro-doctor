@@ -2,7 +2,7 @@
 
 mod validators;
 
-use std::{ fs, error::Error, path::PathBuf, env };
+use std::{ fs, error::Error, path::PathBuf };
 
 use validators::{env::EnvValidator, recommend::RecommendValidator};
 
@@ -74,15 +74,8 @@ fn validate_config_core(config_str: String) -> Result<bool, Box<dyn Error>> {
     solution: None
   };
   println!("{}", tip);
-  let current_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-  let mut path = PathBuf::new();
-  path.push(current_dir);
-  path.push("src");
-  path.push("validators");
-  path.push("config_schema.json");
-  let schema_path = path.as_path();
-  let schema_str = fs::read_to_string(schema_path)?;
-  let config_validator_result = ConfigValidator::build(schema_str, config_str);
+  let schema_str = include_str!("../assets/config_schema.json");
+  let config_validator_result = ConfigValidator::build(String::from(schema_str), config_str);
   let messages = match config_validator_result {
     Ok(config_validator) => config_validator.validate(),
     Err(e) => vec![
