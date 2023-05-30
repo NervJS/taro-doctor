@@ -1,3 +1,13 @@
+## [0.0.3](https://github.com/NervJS/taro-doctor/compare/0.0.2...0.0.3) (2023-05-30)
+
+
+### Bug Fixes
+
+* 调整 config_schema 读取方式 ([4180819](https://github.com/NervJS/taro-doctor/commit/4180819c50e2bca5644cc012223df68125752942))
+* 缺少文件 ([68a5c2f](https://github.com/NervJS/taro-doctor/commit/68a5c2f0757a2acb32f91076db2a26e681c79edb))
+
+
+
 ## [0.0.2](https://github.com/NervJS/taro-doctor/compare/0.0.1...0.0.2) (2023-05-29)
 
 
