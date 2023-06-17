@@ -169,13 +169,31 @@
                 "include": {
                   "type": "array",
                   "items": {
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": true
+                      }
+                    ]
                   }
                 },
                 "exclude": {
                   "type": "array",
                   "items": {
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": true
+                      }
+                    ]
                   }
                 },
                 "esbuild": {
