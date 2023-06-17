@@ -1,3 +1,18 @@
+## [0.0.7](https://github.com/NervJS/taro-doctor/compare/0.0.6...0.0.7) (2023-06-17)
+
+
+### Bug Fixes
+
+* 暂时性移除 aarch64-pc-windows-msvc 平台编译目标以解决 ci 问题 ([4fcb217](https://github.com/NervJS/taro-doctor/commit/4fcb21714146425e6cd29f6ab79a5c544f5312cf))
+* reqwest 使用 rustls 作为 TLS 后端，而不是默认的 OpenSSL ([f867aa5](https://github.com/NervJS/taro-doctor/commit/f867aa5655da20b65f65457b2cd3afb1a444f405))
+
+
+### Features
+
+* 项目配置的验证支持使用远程配置文件 ([b62034e](https://github.com/NervJS/taro-doctor/commit/b62034e204d2255a7addd27355d0900ec04d9e51))
+
+
+
 ## [0.0.6](https://github.com/NervJS/taro-doctor/compare/0.0.5...0.0.6) (2023-06-17)
 
 
