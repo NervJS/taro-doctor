@@ -1,3 +1,12 @@
+## [0.0.6](https://github.com/NervJS/taro-doctor/compare/0.0.5...0.0.6) (2023-06-17)
+
+
+### Bug Fixes
+
+* 更新规则 ([92feebc](https://github.com/NervJS/taro-doctor/commit/92feebc87f3e76941dc0fd43e1161f76539b8972))
+
+
+
 ## [0.0.5](https://github.com/NervJS/taro-doctor/compare/0.0.4...0.0.5) (2023-05-30)
 
 
