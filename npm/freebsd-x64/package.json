@@ -1,0 +1,19 @@
+{
+  "name": "@tarojs/plugin-doctor-freebsd-x64",
+  "version": "0.0.5",
+  "os": [
+    "freebsd"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "main": "taro-doctor.freebsd-x64.node",
+  "files": [
+    "taro-doctor.freebsd-x64.node"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  },
+  "repository": "https://github.com/NervJS/taro-doctor.git"
+}

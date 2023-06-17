@@ -1,0 +1,22 @@
+{
+  "name": "@tarojs/plugin-doctor-linux-x64-musl",
+  "version": "0.0.5",
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "main": "taro-doctor.linux-x64-musl.node",
+  "files": [
+    "taro-doctor.linux-x64-musl.node"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  },
+  "libc": [
+    "musl"
+  ],
+  "repository": "https://github.com/NervJS/taro-doctor.git"
+}

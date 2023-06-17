@@ -1,0 +1,16 @@
+{
+  "name": "@tarojs/plugin-doctor-darwin-universal",
+  "version": "0.0.5",
+  "os": [
+    "darwin"
+  ],
+  "main": "taro-doctor.darwin-universal.node",
+  "files": [
+    "taro-doctor.darwin-universal.node"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  },
+  "repository": "https://github.com/NervJS/taro-doctor.git"
+}
