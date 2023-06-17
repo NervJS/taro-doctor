@@ -19,8 +19,8 @@ export interface ValidateResult {
   isValid: boolean
   messages: Array<Message>
 }
-export function validateConfig(configStr: string): ValidateResult
-export function validateConfigPrint(configStr: string): boolean
+export function validateConfig(configStr: string, remoteSchemaUrl: string, useRemoteSchema: boolean): Promise<ValidateResult>
+export function validateConfigPrint(configStr: string, remoteSchemaUrl: string, useRemoteSchema: boolean): Promise<boolean>
 export function validatePackage(appPath: string, nodeModulesPath: string): ValidateResult
 export function validatePackagePrint(appPath: string, nodeModulesPath: string): boolean
 export function validateEnv(): ValidateResult

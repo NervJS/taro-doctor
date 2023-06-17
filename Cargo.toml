@@ -12,6 +12,7 @@ crate-type = ["cdylib"]
 napi = { version = "2", default-features = false, features = [
   "napi4",
   "serde-json",
+  "async"
 ] }
 napi-derive = { version = "2", default-features = false }
 
@@ -20,6 +21,8 @@ jsonschema = "0.17"
 emojis = "0.6.0"
 console = "0.15.7"
 regex = "1.8.3"
+reqwest = "0.11.18"
+tokio = "1.28.2"
 
 [build-dependencies]
 napi-build = "2.0.1"

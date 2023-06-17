@@ -1,4 +1,4 @@
-use std::{cmp::Ordering, error::Error, fs, path::PathBuf};
+use std::{cmp::Ordering, error::Error, fs, path::PathBuf, time::Duration};
 
 use serde_json::{from_str, Value};
 
@@ -14,6 +14,14 @@ pub struct PackageInfo {
   pub json: Value,
 }
 
+/**
+ * @description: 获取 package.json 信息
+ * @param {&str} node_modules_path
+ * @param {&str} name
+ * @return {Result<PackageInfo, Box<dyn Error>>}
+ * @example:
+ * get_package_info("./node_modules", "react")
+ */
 pub fn get_package_info(
   node_modules_path: &str,
   name: &str,
@@ -51,6 +59,12 @@ pub fn get_package_info(
   }
 }
 
+/**
+ * @description: 比较版本号
+ * @param {&str} a
+ * @param {&str} b
+ * @return {Option<Ordering>}
+ */
 pub fn compare_versions(a: &str, b: &str) -> Option<Ordering> {
   let parts1: Vec<u64> = a.split('.').filter_map(|s| s.parse().ok()).collect();
   let parts2: Vec<u64> = b.split('.').filter_map(|s| s.parse().ok()).collect();
@@ -66,5 +80,24 @@ pub fn compare_versions(a: &str, b: &str) -> Option<Ordering> {
     Ordering::Less => Some(Ordering::Less),
     Ordering::Greater => Some(Ordering::Greater),
     Ordering::Equal => Some(Ordering::Equal),
+  }
+}
+
+/**
+ * @description: 获取远程数据
+ * @param {&str} url
+ * @return {Result<String, reqwest::Error>}
+ */
+pub async fn fetch_data_text(url: &str) -> Result<String, reqwest::Error> {
+  let client = reqwest::Client::builder()
+    .timeout(Duration::from_secs(1))
+    .build()?;
+  let response = client.get(url).send().await?;
+  if response.status().is_success() {
+    let text = response.text().await?;
+    Ok(text)
+  } else {
+    let error = response.error_for_status();
+    Err(error.unwrap_err())
   }
 }

@@ -1,10 +1,9 @@
 #![deny(clippy::all)]
 
 mod validators;
-
 use std::{error::Error, fs, path::PathBuf};
 
-use validators::{env::EnvValidator, message::ValidateResult, recommend::RecommendValidator};
+use validators::{env::EnvValidator, message::ValidateResult, recommend::RecommendValidator, common::fetch_data_text};
 
 use crate::validators::{
   common::Validator,
@@ -17,8 +16,8 @@ use crate::validators::{
 extern crate napi_derive;
 
 #[napi]
-pub fn validate_config(config_str: String) -> ValidateResult {
-  let result = validate_config_core(config_str);
+pub async fn validate_config(config_str: String, remote_schema_url: String, use_remote_schema: bool) -> ValidateResult {
+  let result = validate_config_core(config_str, remote_schema_url, use_remote_schema).await;
   let messages = match result {
     Ok(messages) => messages,
     Err(e) => {
@@ -42,8 +41,8 @@ pub fn validate_config(config_str: String) -> ValidateResult {
 }
 
 #[napi]
-pub fn validate_config_print(config_str: String) -> bool {
-  let result = validate_config_core(config_str);
+pub async fn validate_config_print(config_str: String, remote_schema_url: String, use_remote_schema: bool) -> bool {
+  let result = validate_config_core(config_str, remote_schema_url, use_remote_schema).await;
   let messages = match result {
     Ok(messages) => messages,
     Err(e) => {
@@ -220,14 +219,35 @@ pub fn validate_recommend_print(app_path: String) -> bool {
   is_valid
 }
 
-fn validate_config_core(config_str: String) -> Result<Vec<Message>, Box<dyn Error>> {
-  let tip = Message {
+async fn validate_config_core(config_str: String, remote_schema_url: String, use_remote_schema: bool) -> Result<Vec<Message>, Box<dyn Error>> {
+  let mut tip = vec![Message {
     kind: MessageKind::Info,
     content: String::from("验证项目配置 (/config/index.js) ！"),
     solution: None,
+  }];
+  let schema_str = if use_remote_schema {
+    match fetch_data_text(&remote_schema_url).await {
+      Ok(schema_str) => {
+        tip.push(Message {
+          kind: MessageKind::Success,
+          content: String::from(format!("成功获取远程配置验证文件：{}", remote_schema_url)),
+          solution: None,
+        });
+        schema_str
+      },
+      Err(_) => {
+        tip.push(Message {
+          kind: MessageKind::Warning,
+          content: String::from("无法获取远程配置验证文件，将使用本地配置验证文件！"),
+          solution: None,
+        });
+        include_str!("../assets/config_schema.json").to_string()
+      }
+    }
+  } else {
+    include_str!("../assets/config_schema.json").to_string()
   };
-  let schema_str = include_str!("../assets/config_schema.json");
-  let config_validator_result = ConfigValidator::build(String::from(schema_str), config_str);
+  let config_validator_result = ConfigValidator::build(schema_str, config_str);
   let mut messages = match config_validator_result {
     Ok(config_validator) => config_validator.validate(),
     Err(e) => vec![Message {
@@ -243,7 +263,7 @@ fn validate_config_core(config_str: String) -> Result<Vec<Message>, Box<dyn Erro
       solution: None,
     })
   }
-  messages.insert(0, tip);
+  messages.splice(0..0, tip);
   Ok(messages)
 }
 

@@ -142,14 +142,14 @@
       "oneOf": [
         {
           "type": "string",
-          "enum": ["webpack4", "webpack5"]
+          "enum": ["webpack4", "webpack5", "vite"]
         },
         {
           "type": "object",
           "properties": {
             "type": {
               "type": "string",
-              "enum": ["webpack4", "webpack5"]
+              "enum": ["webpack4", "webpack5", "vite"]
             },
             "prebundle": {
               "type": "object",

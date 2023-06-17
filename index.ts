@@ -17,7 +17,7 @@ export default (ctx) => {
     name: 'doctor',
     async fn() {
       const { appPath, nodeModulesPath, configPath } = ctx.paths
-      const { fs, chalk, PROJECT_CONFIG } = ctx.helper
+      const { fs, chalk, getUserHomeDir, TARO_CONFIG_FOLDER, TARO_BASE_CONFIG, PROJECT_CONFIG } = ctx.helper
 
       if (!configPath || !fs.existsSync(configPath)) {
         console.log(chalk.red(`找不到项目配置文件${PROJECT_CONFIG}，请确定当前目录是 Taro 项目根目录!`))
@@ -29,8 +29,23 @@ export default (ctx) => {
         }
         return v
       })
+      let remoteConfigSchemaUrl = 'https://raw.githubusercontent.com/NervJS/taro-doctor/main/assets/config_schema.json'
+      let useRemoteConfigSchema = true
+      const homedir = getUserHomeDir()
+      if (homedir) {
+        const taroConfigPath = path.join(homedir, TARO_CONFIG_FOLDER)
+        const taroConfig = path.join(taroConfigPath, TARO_BASE_CONFIG)
+        if (fs.existsSync(taroConfig)) {
+          const config = await fs.readJSON(taroConfig)
+          remoteConfigSchemaUrl = config && config.remoteConfigSchemaUrl ? config.remoteConfigSchemaUrl : remoteConfigSchemaUrl
+          useRemoteConfigSchema = config && config.useRemoteConfigSchema ? config.useRemoteConfigSchema : useRemoteConfigSchema
+        } else {
+          await fs.createFile(taroConfig)
+          await fs.writeJSON(taroConfig, { remoteConfigSchemaUrl, useRemoteConfigSchema })
+        }
+      }
       validateEnvPrint()
-      validateConfigPrint(configStr)
+      await validateConfigPrint(configStr, remoteConfigSchemaUrl, useRemoteConfigSchema)
       validatePackagePrint(appPath, nodeModulesPath)
       validateRecommendPrint(appPath)
       await validateEslintPrint(ctx.initialConfig, chalk)
