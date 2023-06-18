@@ -16,7 +16,7 @@ const glob = require("glob");
 const js_binding_1 = require("./js-binding");
 exports.default = (ctx) => {
     ctx.registerCommand({
-        name: 'dx',
+        name: 'doctor',
         fn() {
             return __awaiter(this, void 0, void 0, function* () {
                 const { appPath, nodeModulesPath, configPath } = ctx.paths;
