@@ -19,7 +19,7 @@ import {
 
 export default (ctx) => {
   ctx.registerCommand({
-    name: 'dx',
+    name: 'doctor',
     async fn() {
       const { appPath, nodeModulesPath, configPath } = ctx.paths
       const { fs, chalk, PROJECT_CONFIG } = ctx.helper
