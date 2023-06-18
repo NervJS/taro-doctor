@@ -1,3 +1,12 @@
+## [0.0.8](https://github.com/NervJS/taro-doctor/compare/0.0.7...0.0.8) (2023-06-18)
+
+
+### Features
+
+* 调整方法导出方式 ([e072df3](https://github.com/NervJS/taro-doctor/commit/e072df3175e6dc6c8b3ac6decd3cf813bdc2d61e))
+
+
+
 ## [0.0.7](https://github.com/NervJS/taro-doctor/compare/0.0.6...0.0.7) (2023-06-17)
 
 
