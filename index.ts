@@ -4,53 +4,96 @@ import { ESLint } from 'eslint'
 import * as glob from 'glob'
 
 import {
-  validateEnvPrint,
-  validateConfigPrint,
-  validatePackagePrint,
-  validateRecommendPrint,
+  validateEnvPrint as validateEnvPrintBinding,
+  validateConfigPrint as validateConfigPrintBinding,
+  validatePackagePrint as validatePackagePrintBinding,
+  validateRecommendPrint as validateRecommendPrintBinding,
+  validateEnv as validateEnvBinding,
+  validateConfig as validateConfigBinding,
+  validatePackage as validatePackageBinding,
+  validateRecommend as validateRecommendBinding,
   MessageKind,
+  Message,
   ValidateResult,
 } from './js-binding'
 
 export default (ctx) => {
   ctx.registerCommand({
-    name: 'doctor',
+    name: 'dx',
     async fn() {
       const { appPath, nodeModulesPath, configPath } = ctx.paths
-      const { fs, chalk, getUserHomeDir, TARO_CONFIG_FOLDER, TARO_BASE_CONFIG, PROJECT_CONFIG } = ctx.helper
+      const { fs, chalk, PROJECT_CONFIG } = ctx.helper
 
       if (!configPath || !fs.existsSync(configPath)) {
         console.log(chalk.red(`找不到项目配置文件${PROJECT_CONFIG}，请确定当前目录是 Taro 项目根目录!`))
         process.exit(1)
       }
-      const configStr = JSON.stringify(ctx.initialConfig, (_, v) => {
-        if (typeof v === 'function') {
-          return '__function__'
-        }
-        return v
-      })
-      let remoteConfigSchemaUrl = 'https://raw.githubusercontent.com/NervJS/taro-doctor/main/assets/config_schema.json'
-      let useRemoteConfigSchema = true
-      const homedir = getUserHomeDir()
-      if (homedir) {
-        const taroConfigPath = path.join(homedir, TARO_CONFIG_FOLDER)
-        const taroConfig = path.join(taroConfigPath, TARO_BASE_CONFIG)
-        if (fs.existsSync(taroConfig)) {
-          const config = await fs.readJSON(taroConfig)
-          remoteConfigSchemaUrl = config && config.remoteConfigSchemaUrl ? config.remoteConfigSchemaUrl : remoteConfigSchemaUrl
-          useRemoteConfigSchema = config && config.useRemoteConfigSchema ? config.useRemoteConfigSchema : useRemoteConfigSchema
-        } else {
-          await fs.createFile(taroConfig)
-          await fs.writeJSON(taroConfig, { remoteConfigSchemaUrl, useRemoteConfigSchema })
-        }
-      }
       validateEnvPrint()
-      await validateConfigPrint(configStr, remoteConfigSchemaUrl, useRemoteConfigSchema)
+      await validateConfigPrint(ctx.initialConfig, ctx.helper)
       validatePackagePrint(appPath, nodeModulesPath)
       validateRecommendPrint(appPath)
       await validateEslintPrint(ctx.initialConfig, chalk)
     },
   })
+}
+
+async function getValidateConfigParams(projectConfig: any, helper: any) {
+  const configStr = JSON.stringify(projectConfig, (_, v) => {
+    if (typeof v === 'function') {
+      return '__function__'
+    }
+    return v
+  })
+  let remoteSchemaUrl = 'https://raw.githubusercontent.com/NervJS/taro-doctor/main/assets/config_schema.json'
+  let useRemoteSchema = true
+  const homedir = helper.getUserHomeDir()
+  if (homedir) {
+    const taroConfigPath = path.join(homedir, helper.TARO_CONFIG_FOLDER)
+    const taroConfig = path.join(taroConfigPath, helper.TARO_BASE_CONFIG)
+    if (helper.fs.existsSync(taroConfig)) {
+      const config = await helper.fs.readJSON(taroConfig)
+      remoteSchemaUrl = config && config.remoteConfigSchemaUrl ? config.remoteConfigSchemaUrl : remoteSchemaUrl
+      useRemoteSchema = config && config.useRemoteConfigSchema ? config.useRemoteConfigSchema : useRemoteSchema
+    } else {
+      await helper.fs.createFile(taroConfig)
+      await helper.fs.writeJSON(taroConfig, { remoteSchemaUrl, useRemoteSchema })
+    }
+  }
+  return { configStr, remoteSchemaUrl, useRemoteSchema }
+}
+
+export async function validateConfig(projectConfig: any, helper: any): Promise<ValidateResult> {
+  const { configStr, remoteSchemaUrl, useRemoteSchema } = await getValidateConfigParams(projectConfig, helper)
+  return validateConfigBinding(configStr, remoteSchemaUrl, useRemoteSchema)
+}
+
+export async function validateConfigPrint(projectConfig: any, helper: any): Promise<boolean> {
+  const { configStr, remoteSchemaUrl, useRemoteSchema } = await getValidateConfigParams(projectConfig, helper)
+  return validateConfigPrintBinding(configStr, remoteSchemaUrl, useRemoteSchema)
+}
+
+export function validateEnv(): ValidateResult {
+  return validateEnvBinding()
+}
+
+export function validateEnvPrint(): boolean {
+  return validateEnvPrintBinding()
+}
+
+export function validatePackage(appPath: string, nodeModulesPath: string): ValidateResult {
+  return validatePackageBinding(appPath, nodeModulesPath)
+}
+
+export function validatePackagePrint(appPath: string, nodeModulesPath: string): boolean {
+  return validatePackagePrintBinding(appPath, nodeModulesPath)
+}
+
+export function validateRecommend(appPath: string): ValidateResult {
+  return validateRecommendBinding(appPath)
+}
+
+export function validateRecommendPrint(appPath: string): boolean {
+  return validateRecommendPrintBinding(appPath)
 }
 
 export async function validateEslint(projectConfig, chalk): Promise<ValidateResult> {
@@ -107,4 +150,10 @@ async function validateEslintCore(projectConfig, chalk): Promise<ValidateResult>
       },
     ],
   }
+}
+
+export {
+  MessageKind,
+  ValidateResult,
+  Message
 }

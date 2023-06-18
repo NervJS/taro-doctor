@@ -9,53 +9,96 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateEslintPrint = exports.validateEslint = void 0;
+exports.validateEslintPrint = exports.validateEslint = exports.validateRecommendPrint = exports.validateRecommend = exports.validatePackagePrint = exports.validatePackage = exports.validateEnvPrint = exports.validateEnv = exports.validateConfigPrint = exports.validateConfig = void 0;
 const path = require("path");
 const eslint_1 = require("eslint");
 const glob = require("glob");
 const js_binding_1 = require("./js-binding");
 exports.default = (ctx) => {
     ctx.registerCommand({
-        name: 'doctor',
+        name: 'dx',
         fn() {
             return __awaiter(this, void 0, void 0, function* () {
                 const { appPath, nodeModulesPath, configPath } = ctx.paths;
-                const { fs, chalk, getUserHomeDir, TARO_CONFIG_FOLDER, TARO_BASE_CONFIG, PROJECT_CONFIG } = ctx.helper;
+                const { fs, chalk, PROJECT_CONFIG } = ctx.helper;
                 if (!configPath || !fs.existsSync(configPath)) {
                     console.log(chalk.red(`找不到项目配置文件${PROJECT_CONFIG}，请确定当前目录是 Taro 项目根目录!`));
                     process.exit(1);
                 }
-                const configStr = JSON.stringify(ctx.initialConfig, (_, v) => {
-                    if (typeof v === 'function') {
-                        return '__function__';
-                    }
-                    return v;
-                });
-                let remoteConfigSchemaUrl = 'https://raw.githubusercontent.com/NervJS/taro-doctor/main/assets/config_schema.json';
-                let useRemoteConfigSchema = true;
-                const homedir = getUserHomeDir();
-                if (homedir) {
-                    const taroConfigPath = path.join(homedir, TARO_CONFIG_FOLDER);
-                    const taroConfig = path.join(taroConfigPath, TARO_BASE_CONFIG);
-                    if (fs.existsSync(taroConfig)) {
-                        const config = yield fs.readJSON(taroConfig);
-                        remoteConfigSchemaUrl = config && config.remoteConfigSchemaUrl ? config.remoteConfigSchemaUrl : remoteConfigSchemaUrl;
-                        useRemoteConfigSchema = config && config.useRemoteConfigSchema ? config.useRemoteConfigSchema : useRemoteConfigSchema;
-                    }
-                    else {
-                        yield fs.createFile(taroConfig);
-                        yield fs.writeJSON(taroConfig, { remoteConfigSchemaUrl, useRemoteConfigSchema });
-                    }
-                }
-                (0, js_binding_1.validateEnvPrint)();
-                yield (0, js_binding_1.validateConfigPrint)(configStr, remoteConfigSchemaUrl, useRemoteConfigSchema);
-                (0, js_binding_1.validatePackagePrint)(appPath, nodeModulesPath);
-                (0, js_binding_1.validateRecommendPrint)(appPath);
+                validateEnvPrint();
+                yield validateConfigPrint(ctx.initialConfig, ctx.helper);
+                validatePackagePrint(appPath, nodeModulesPath);
+                validateRecommendPrint(appPath);
                 yield validateEslintPrint(ctx.initialConfig, chalk);
             });
         },
     });
 };
+function getValidateConfigParams(projectConfig, helper) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const configStr = JSON.stringify(projectConfig, (_, v) => {
+            if (typeof v === 'function') {
+                return '__function__';
+            }
+            return v;
+        });
+        let remoteSchemaUrl = 'https://raw.githubusercontent.com/NervJS/taro-doctor/main/assets/config_schema.json';
+        let useRemoteSchema = true;
+        const homedir = helper.getUserHomeDir();
+        if (homedir) {
+            const taroConfigPath = path.join(homedir, helper.TARO_CONFIG_FOLDER);
+            const taroConfig = path.join(taroConfigPath, helper.TARO_BASE_CONFIG);
+            if (helper.fs.existsSync(taroConfig)) {
+                const config = yield helper.fs.readJSON(taroConfig);
+                remoteSchemaUrl = config && config.remoteConfigSchemaUrl ? config.remoteConfigSchemaUrl : remoteSchemaUrl;
+                useRemoteSchema = config && config.useRemoteConfigSchema ? config.useRemoteConfigSchema : useRemoteSchema;
+            }
+            else {
+                yield helper.fs.createFile(taroConfig);
+                yield helper.fs.writeJSON(taroConfig, { remoteSchemaUrl, useRemoteSchema });
+            }
+        }
+        return { configStr, remoteSchemaUrl, useRemoteSchema };
+    });
+}
+function validateConfig(projectConfig, helper) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { configStr, remoteSchemaUrl, useRemoteSchema } = yield getValidateConfigParams(projectConfig, helper);
+        return (0, js_binding_1.validateConfig)(configStr, remoteSchemaUrl, useRemoteSchema);
+    });
+}
+exports.validateConfig = validateConfig;
+function validateConfigPrint(projectConfig, helper) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { configStr, remoteSchemaUrl, useRemoteSchema } = yield getValidateConfigParams(projectConfig, helper);
+        return (0, js_binding_1.validateConfigPrint)(configStr, remoteSchemaUrl, useRemoteSchema);
+    });
+}
+exports.validateConfigPrint = validateConfigPrint;
+function validateEnv() {
+    return (0, js_binding_1.validateEnv)();
+}
+exports.validateEnv = validateEnv;
+function validateEnvPrint() {
+    return (0, js_binding_1.validateEnvPrint)();
+}
+exports.validateEnvPrint = validateEnvPrint;
+function validatePackage(appPath, nodeModulesPath) {
+    return (0, js_binding_1.validatePackage)(appPath, nodeModulesPath);
+}
+exports.validatePackage = validatePackage;
+function validatePackagePrint(appPath, nodeModulesPath) {
+    return (0, js_binding_1.validatePackagePrint)(appPath, nodeModulesPath);
+}
+exports.validatePackagePrint = validatePackagePrint;
+function validateRecommend(appPath) {
+    return (0, js_binding_1.validateRecommend)(appPath);
+}
+exports.validateRecommend = validateRecommend;
+function validateRecommendPrint(appPath) {
+    return (0, js_binding_1.validateRecommendPrint)(appPath);
+}
+exports.validateRecommendPrint = validateRecommendPrint;
 function validateEslint(projectConfig, chalk) {
     return __awaiter(this, void 0, void 0, function* () {
         const result = yield validateEslintCore(projectConfig, chalk);
