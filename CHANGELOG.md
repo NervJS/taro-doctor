@@ -1,3 +1,12 @@
+## [0.0.9](https://github.com/NervJS/taro-doctor/compare/0.0.8...0.0.9) (2023-06-18)
+
+
+### Bug Fixes
+
+* 插件名错误 ([894c166](https://github.com/NervJS/taro-doctor/commit/894c16612e65a23b116fc6ad54265ca342911013))
+
+
+
 ## [0.0.8](https://github.com/NervJS/taro-doctor/compare/0.0.7...0.0.8) (2023-06-18)
 
 
