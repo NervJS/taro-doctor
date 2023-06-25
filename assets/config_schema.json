@@ -958,10 +958,22 @@
           "additionalProperties": true
         },
         "resolve": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+          "type": "object",
+          "properties": {
+            "include": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "exclude": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": true
         },
         "enableMultipleClassName": {
           "type": "boolean"
