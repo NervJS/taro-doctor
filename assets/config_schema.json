@@ -221,6 +221,50 @@
                 }
               },
               "additionalProperties": false
+            },
+            "vitePlugins": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^__function__$"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {},
+                    "additionalProperties": true
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string",
+                          "pattern": "^__function__$"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {},
+                          "additionalProperties": true
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
             }
           },
           "additionalProperties": false
