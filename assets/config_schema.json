@@ -136,7 +136,7 @@
     },
     "framework": {
       "type": "string",
-      "enum": ["nerv", "react", "preact", "vue", "vue3"]
+      "enum": ["nerv", "react", "preact", "solid", "vue", "vue3"]
     },
     "compiler": {
       "oneOf": [
