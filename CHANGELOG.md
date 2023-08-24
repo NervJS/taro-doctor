@@ -1,3 +1,21 @@
+## [0.0.11](https://github.com/NervJS/taro-doctor/compare/v0.0.10...v0.0.11) (2023-08-24)
+
+
+### Bug Fixes
+
+* 修复错误的 oneOf 语法 [#5](https://github.com/NervJS/taro-doctor/issues/5) ([8ed4dcb](https://github.com/NervJS/taro-doctor/commit/8ed4dcb8d82d0ef336e3a394e81ab165c2275247))
+* rm useless dep fix [#7](https://github.com/NervJS/taro-doctor/issues/7) ([eb994c5](https://github.com/NervJS/taro-doctor/commit/eb994c5fdb54fe0ff336dbb4ad3a1966302a2c8d))
+* rn.resolve 的 schema 错误, [#2](https://github.com/NervJS/taro-doctor/issues/2) ([3277360](https://github.com/NervJS/taro-doctor/commit/3277360a0017a22e5d2600b70bab55189038e45a))
+* **vitePlugins:** use any array ([a61fba4](https://github.com/NervJS/taro-doctor/commit/a61fba45ecfa6e2baef3b75247eb6fc8fdbcb905))
+
+
+### Features
+
+* add solid support ([f071e21](https://github.com/NervJS/taro-doctor/commit/f071e21de81d249a41cbc260f24b0240ff08270b))
+* **vite:** add vitePlugins ([26609fa](https://github.com/NervJS/taro-doctor/commit/26609fad5fb1ad2d48dc729a1b27b8c117a49ff0))
+
+
+
 ## [0.0.10](https://github.com/NervJS/taro-doctor/compare/0.0.9...0.0.10) (2023-06-18)
 
 
