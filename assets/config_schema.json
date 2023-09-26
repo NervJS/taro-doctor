@@ -151,6 +151,9 @@
               "type": "string",
               "enum": ["webpack4", "webpack5", "vite"]
             },
+            "errorLevel": {
+              "type": "integer"
+            },
             "prebundle": {
               "type": "object",
               "properties": {
