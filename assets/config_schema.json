@@ -380,9 +380,32 @@
                   }
                 ]
               }
+            },
+            "fileType": {
+              "type": "object",
+              "properties": {
+                "style": {
+                  "type": "string"
+                },
+                "script": {
+                  "type": "string"
+                },
+                "templ": {
+                  "type": "string"
+                },
+                "config": {
+                  "type": "string"
+                },
+                "xs": {
+                  "type": "string"
+                }
+              },
+              "required": ["style", "script", "templ", "config"],
+              "additionalProperties": false
             }
           },
-          "additionalProperties": false
+          "required": ["enable"],
+          "additionalProperties": true
         },
         "output": {
           "type": "object",
