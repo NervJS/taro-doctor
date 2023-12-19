@@ -563,6 +563,14 @@
           "type": "object",
           "properties": {},
           "additionalProperties": true
+        },
+        "expiremental": {
+          "type": "object",
+          "properties": {
+            "compileMode": {
+              "type": "boolean"
+            }
+          }
         }
       },
       "additionalProperties": true
