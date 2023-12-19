@@ -564,7 +564,7 @@
           "properties": {},
           "additionalProperties": true
         },
-        "expiremental": {
+        "experimental": {
           "type": "object",
           "properties": {
             "compileMode": {
