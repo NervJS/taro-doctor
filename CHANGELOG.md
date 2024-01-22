@@ -1,3 +1,12 @@
+## [0.0.13](https://github.com/NervJS/taro-doctor/compare/v0.0.11...v0.0.13) (2024-01-22)
+
+
+### Features
+
+* 新增配置文件 compiler.errorLevel 字段校验 ([5a1155e](https://github.com/NervJS/taro-doctor/commit/5a1155ef119fc15005bc9ccc064a44ae264e23e3))
+
+
+
 ## [0.0.12](https://github.com/NervJS/taro-doctor/compare/v0.0.11...v0.0.12) (2024-01-19)
 
 
