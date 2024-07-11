@@ -1,6 +1,6 @@
 {
   "name": "@tarojs/plugin-doctor",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "main": "index.js",
   "napi": {
     "name": "taro-doctor",
