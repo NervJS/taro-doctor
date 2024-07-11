@@ -1,3 +1,17 @@
+## [0.0.14](https://github.com/NervJS/taro-doctor/compare/v0.0.13...v0.0.14) (2024-07-11)
+
+
+### Bug Fixes
+
+* ci 删除 universal-apple-darwin ([201f18a](https://github.com/NervJS/taro-doctor/commit/201f18a09707e441b2fa726c97333c4c4675fff9))
+
+
+### Features
+
+* 添加 framework 新的枚举值 none ([4b1d766](https://github.com/NervJS/taro-doctor/commit/4b1d76656d6817dd705f8f347edb0300da412566))
+
+
+
 ## [0.0.13](https://github.com/NervJS/taro-doctor/compare/v0.0.11...v0.0.13) (2024-01-22)
 
 
