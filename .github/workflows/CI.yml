@@ -21,48 +21,43 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [18.x]
         settings:
-          - host: macos-12
+          - host: macos-latest
             target: x86_64-apple-darwin
             build: |
-              pnpm build:binding:release
-              strip -x crates/native_binding/*.node
+              yarn build --target x86_64-apple-darwin
+              strip -x *.node
           - host: windows-latest
-            build: pnpm build:binding:release
+            build: yarn build
             target: x86_64-pc-windows-msvc
-          - host: ubuntu-20.04
+          - host: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-debian
             build: |-
               set -e &&
-              pnpm build:binding:release --target x86_64-unknown-linux-gnu &&
-              strip crates/native_binding/*.node
-          - host: ubuntu-20.04
+              yarn build --target x86_64-unknown-linux-gnu &&
+              strip *.node
+          - host: ubuntu-latest
             target: x86_64-unknown-linux-musl
             docker: ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
-            build: set -e && pnpm build:binding:release && strip crates/native_binding/*.node
-          - host: macos-12
+            build: set -e && yarn build && strip *.node
+          - host: macos-latest
             target: aarch64-apple-darwin
             build: |
-              pnpm build:binding:release --target aarch64-apple-darwin
-              strip -x crates/native_binding/*.node
-    name: stable - ${{ matrix.settings.target }}
+              yarn build --target aarch64-apple-darwin
+              strip -x *.node
+    name: stable - ${{ matrix.settings.target }} - node@18
     runs-on: ${{ matrix.settings.host }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3.0.0
-        with:
-          version: 8
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
         if: ${{ !matrix.settings.docker }}
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      - name: Setup Rust
+          node-version: 18
+          check-latest: true
+          cache: yarn
+      - name: Install
         uses: dtolnay/rust-toolchain@stable
         if: ${{ !matrix.settings.docker }}
         with:
@@ -78,8 +73,28 @@ jobs:
             .cargo-cache
             target/
           key: ${{ matrix.settings.target }}-cargo-${{ matrix.settings.host }}
+      - uses: goto-bus-stop/setup-zig@v2
+        if: ${{ matrix.settings.target == 'armv7-unknown-linux-gnueabihf' }}
+        with:
+          version: 0.10.1
+      - name: Setup toolchain
+        run: ${{ matrix.settings.setup }}
+        if: ${{ matrix.settings.setup }}
+        shell: bash
+      - name: Setup node x86
+        if: matrix.settings.target == 'i686-pc-windows-msvc'
+        run: yarn config set supportedArchitectures.cpu "ia32"
+        shell: bash
       - name: Install dependencies
-        run: pnpm install --filter @tarojs/binding... --frozen-lockfile
+        run: yarn install
+      - name: Setup node x86
+        uses: actions/setup-node@v3
+        if: matrix.settings.target == 'i686-pc-windows-msvc'
+        with:
+          node-version: 18
+          check-latest: true
+          cache: yarn
+          architecture: x86
       - name: Build in docker
         uses: addnab/docker-run-action@v3
         if: ${{ matrix.settings.docker }}
@@ -92,11 +107,112 @@ jobs:
         if: ${{ !matrix.settings.docker }}
         shell: bash
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: bindings-${{ matrix.settings.target }}
-          path: crates/native_binding/${{ inputs.name }}.*.node
+          path: ${{ env.APP_NAME }}.*.node
           if-no-files-found: error
+  test-macOS-windows-binding:
+    name: Test bindings on ${{ matrix.settings.target }} - node@${{ matrix.node }}
+    needs:
+      - build
+    strategy:
+      fail-fast: false
+      matrix:
+        settings:
+          - host: windows-latest
+            target: x86_64-pc-windows-msvc
+        node:
+          - '14'
+          - '16'
+          - '18'
+    runs-on: ${{ matrix.settings.host }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          check-latest: true
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: bindings-${{ matrix.settings.target }}
+          path: .
+      - name: List packages
+        run: ls -R .
+        shell: bash
+      - name: Test bindings
+        run: yarn test
+  test-linux-x64-gnu-binding:
+    name: Test bindings on Linux-x64-gnu - node@${{ matrix.node }}
+    needs:
+      - build
+    strategy:
+      fail-fast: false
+      matrix:
+        node:
+          - '14'
+          - '16'
+          - '18'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          check-latest: true
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: bindings-x86_64-unknown-linux-gnu
+          path: .
+      - name: List packages
+        run: ls -R .
+        shell: bash
+      - name: Test bindings
+        run: docker run --rm -v $(pwd):/build -w /build node:${{ matrix.node }}-slim yarn test
+  test-linux-x64-musl-binding:
+    name: Test bindings on x86_64-unknown-linux-musl - node@${{ matrix.node }}
+    needs:
+      - build
+    strategy:
+      fail-fast: false
+      matrix:
+        node:
+          - '14'
+          - '16'
+          - '18'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          check-latest: true
+          cache: yarn
+      - name: Install dependencies
+        run: |
+          yarn config set supportedArchitectures.libc "musl"
+          yarn install
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: bindings-x86_64-unknown-linux-musl
+          path: .
+      - name: List packages
+        run: ls -R .
+        shell: bash
+      - name: Test bindings
+        run: docker run --rm -v $(pwd):/build -w /build node:${{ matrix.node }}-alpine yarn test
   publish:
     name: Publish
     runs-on: ubuntu-latest
