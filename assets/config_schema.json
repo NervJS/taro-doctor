@@ -261,7 +261,7 @@
     },
     "cssMinimizer": {
       "type": "string",
-      "enum": ["csso", "esbuild", "parcelCss"]
+      "enum": ["csso", "esbuild", "lightningcss"]
     },
     "cache": {
       "type": "object",
