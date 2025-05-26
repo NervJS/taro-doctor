@@ -1,4 +1,4 @@
-import { MessageKind, Message, ValidateResult } from './js-binding';
+import { Message, MessageKind, ValidateResult } from './js-binding';
 declare const _default: (ctx: any) => void;
 export default _default;
 export declare function validateConfig(projectConfig: any, helper: any): Promise<ValidateResult>;
@@ -11,4 +11,5 @@ export declare function validateRecommend(appPath: string): ValidateResult;
 export declare function validateRecommendPrint(appPath: string): boolean;
 export declare function validateEslint(projectConfig: any, chalk: any): Promise<ValidateResult>;
 export declare function validateEslintPrint(projectConfig: any, chalk: any): Promise<boolean>;
-export { MessageKind, ValidateResult, Message };
+export declare function validateStylelintPrint(projectConfig: any, chalk: any): Promise<boolean>;
+export { Message, MessageKind, ValidateResult };

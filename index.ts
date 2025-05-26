@@ -1,19 +1,20 @@
 import * as path from 'path'
 
-import { ESLint } from 'eslint'
+import { ESLint, loadESLint } from 'eslint'
 import * as glob from 'glob'
 
+import * as stylelint from 'stylelint'
 import {
-  validateEnvPrint as validateEnvPrintBinding,
-  validateConfigPrint as validateConfigPrintBinding,
-  validatePackagePrint as validatePackagePrintBinding,
-  validateRecommendPrint as validateRecommendPrintBinding,
-  validateEnv as validateEnvBinding,
-  validateConfig as validateConfigBinding,
-  validatePackage as validatePackageBinding,
-  validateRecommend as validateRecommendBinding,
-  MessageKind,
   Message,
+  MessageKind,
+  validateConfig as validateConfigBinding,
+  validateConfigPrint as validateConfigPrintBinding,
+  validateEnv as validateEnvBinding,
+  validateEnvPrint as validateEnvPrintBinding,
+  validatePackage as validatePackageBinding,
+  validatePackagePrint as validatePackagePrintBinding,
+  validateRecommend as validateRecommendBinding,
+  validateRecommendPrint as validateRecommendPrintBinding,
   ValidateResult,
 } from './js-binding'
 
@@ -33,6 +34,7 @@ export default (ctx) => {
       validatePackagePrint(appPath, nodeModulesPath)
       validateRecommendPrint(appPath)
       await validateEslintPrint(ctx.initialConfig, chalk)
+      await validateStylelintPrint(ctx.initialConfig, chalk)
     },
   })
 }
@@ -118,22 +120,77 @@ export async function validateEslintPrint(projectConfig, chalk): Promise<boolean
   return is_valid
 }
 
+export async function validateStylelintPrint(projectConfig, chalk): Promise<boolean> {
+  const result = await validateStylelintCore(projectConfig, chalk)
+  let is_valid = result.isValid
+  let report = result.messages[0].content
+  console.log(`\u{1F3AF} 检查 Stylelint (以下为 Stylelint 的输出)！`)
+  if (is_valid) {
+    console.log(`${chalk.green('[\u{2713}]')} Stylelint 检查通过！`)
+  } else {
+    console.log(report)
+  }
+  return is_valid
+}
+
+async function validateStylelintCore(projectConfig, chalk): Promise<ValidateResult> {
+  const appPath = process.cwd()
+  const linterResult = await stylelint.lint({
+    files: path.join(appPath, projectConfig.sourceRoot, '**/*.{css,less,scss,sass}'),
+    configBasedir: appPath,
+    formatter: 'string'
+  })
+  let report = linterResult.report
+  let is_valid = true
+  for (const result of linterResult.results) {
+    if (result.warnings.length > 0) {
+      is_valid = false
+      break
+    }
+  }
+  if (is_valid) {
+    report = `${chalk.green('[\u{2713}]')} Stylelint 检查通过！`
+  }
+  return {
+    isValid: is_valid,
+    messages: [
+      {
+        kind: is_valid ? MessageKind.Success : MessageKind.Error,
+        content: report,
+      },
+    ],
+  }
+}
+
 async function validateEslintCore(projectConfig, chalk): Promise<ValidateResult> {
   const appPath = process.cwd()
-  const globPattern = glob.sync(path.join(appPath, '.eslintrc*'))
+  const legacyConfigPattern = glob.sync(path.join(appPath, '.eslintrc*'))
+  const flatConfigPattern = glob.sync(path.join(appPath, 'eslint.config.{js,cjs,mjs}'))
+  const useFlatConfig = Boolean(flatConfigPattern.length)
 
-  const eslintCli = new ESLint({
-    cwd: process.cwd(),
-    useEslintrc: Boolean(globPattern.length),
+  const cwd = process.cwd()
+
+  const flatConfig: ESLint.Options = {
+    cwd,
+  }
+
+  // 兼容 eslint8
+  const legacyConfig: ESLint.LegacyOptions = {
+    cwd,
+    useEslintrc: Boolean(legacyConfigPattern.length),
     baseConfig: {
       extends: [`taro/${projectConfig.framework}`],
     },
-  })
+  }
 
-  const sourceFiles = path.join(process.cwd(), projectConfig.sourceRoot, '**/*.{js,ts,jsx,tsx}')
+  const ESLint = await loadESLint({ useFlatConfig })
+  const options = useFlatConfig ? flatConfig : legacyConfig
+  const eslintCli = new ESLint(options as any)
+
+  const sourceFiles = path.join(cwd, projectConfig.sourceRoot, '**/*.{js,ts,jsx,tsx}')
   const report = await eslintCli.lintFiles([sourceFiles])
   const formatter = await eslintCli.loadFormatter()
-  let rawReport = formatter.format(report)
+  let rawReport = await formatter.format(report)
   let is_valid = true
   if (rawReport) {
     is_valid = false
@@ -152,8 +209,4 @@ async function validateEslintCore(projectConfig, chalk): Promise<ValidateResult>
   }
 }
 
-export {
-  MessageKind,
-  ValidateResult,
-  Message
-}
+export { Message, MessageKind, ValidateResult }
