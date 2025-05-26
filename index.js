@@ -9,10 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateEslintPrint = exports.validateEslint = exports.validateRecommendPrint = exports.validateRecommend = exports.validatePackagePrint = exports.validatePackage = exports.validateEnvPrint = exports.validateEnv = exports.validateConfigPrint = exports.validateConfig = void 0;
+exports.validateStylelintPrint = exports.validateEslintPrint = exports.validateEslint = exports.validateRecommendPrint = exports.validateRecommend = exports.validatePackagePrint = exports.validatePackage = exports.validateEnvPrint = exports.validateEnv = exports.validateConfigPrint = exports.validateConfig = void 0;
 const path = require("path");
 const eslint_1 = require("eslint");
 const glob = require("glob");
+const stylelint = require("stylelint");
 const js_binding_1 = require("./js-binding");
 exports.default = (ctx) => {
     ctx.registerCommand({
@@ -30,6 +31,7 @@ exports.default = (ctx) => {
                 validatePackagePrint(appPath, nodeModulesPath);
                 validateRecommendPrint(appPath);
                 yield validateEslintPrint(ctx.initialConfig, chalk);
+                yield validateStylelintPrint(ctx.initialConfig, chalk);
             });
         },
     });
@@ -126,21 +128,77 @@ function validateEslintPrint(projectConfig, chalk) {
     });
 }
 exports.validateEslintPrint = validateEslintPrint;
+function validateStylelintPrint(projectConfig, chalk) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const result = yield validateStylelintCore(projectConfig, chalk);
+        let is_valid = result.isValid;
+        let report = result.messages[0].content;
+        console.log(`\u{1F3AF} 检查 Stylelint (以下为 Stylelint 的输出)！`);
+        if (is_valid) {
+            console.log(`${chalk.green('[\u{2713}]')} Stylelint 检查通过！`);
+        }
+        else {
+            console.log(report);
+        }
+        return is_valid;
+    });
+}
+exports.validateStylelintPrint = validateStylelintPrint;
+function validateStylelintCore(projectConfig, chalk) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const appPath = process.cwd();
+        const linterResult = yield stylelint.lint({
+            files: path.join(appPath, projectConfig.sourceRoot, '**/*.{css,less,scss,sass}'),
+            configBasedir: appPath,
+            formatter: 'string'
+        });
+        let report = linterResult.report;
+        let is_valid = true;
+        for (const result of linterResult.results) {
+            if (result.warnings.length > 0) {
+                is_valid = false;
+                break;
+            }
+        }
+        if (is_valid) {
+            report = `${chalk.green('[\u{2713}]')} Stylelint 检查通过！`;
+        }
+        return {
+            isValid: is_valid,
+            messages: [
+                {
+                    kind: is_valid ? 2 /* MessageKind.Success */ : 1 /* MessageKind.Error */,
+                    content: report,
+                },
+            ],
+        };
+    });
+}
 function validateEslintCore(projectConfig, chalk) {
     return __awaiter(this, void 0, void 0, function* () {
         const appPath = process.cwd();
-        const globPattern = glob.sync(path.join(appPath, '.eslintrc*'));
-        const eslintCli = new eslint_1.ESLint({
-            cwd: process.cwd(),
-            useEslintrc: Boolean(globPattern.length),
+        const legacyConfigPattern = glob.sync(path.join(appPath, '.eslintrc*'));
+        const flatConfigPattern = glob.sync(path.join(appPath, 'eslint.config.{js,cjs,mjs}'));
+        const useFlatConfig = Boolean(flatConfigPattern.length);
+        const cwd = process.cwd();
+        const flatConfig = {
+            cwd,
+        };
+        // 兼容 eslint8
+        const legacyConfig = {
+            cwd,
+            useEslintrc: Boolean(legacyConfigPattern.length),
             baseConfig: {
                 extends: [`taro/${projectConfig.framework}`],
             },
-        });
-        const sourceFiles = path.join(process.cwd(), projectConfig.sourceRoot, '**/*.{js,ts,jsx,tsx}');
+        };
+        const ESLint = yield (0, eslint_1.loadESLint)({ useFlatConfig });
+        const options = useFlatConfig ? flatConfig : legacyConfig;
+        const eslintCli = new ESLint(options);
+        const sourceFiles = path.join(cwd, projectConfig.sourceRoot, '**/*.{js,ts,jsx,tsx}');
         const report = yield eslintCli.lintFiles([sourceFiles]);
         const formatter = yield eslintCli.loadFormatter();
-        let rawReport = formatter.format(report);
+        let rawReport = yield formatter.format(report);
         let is_valid = true;
         if (rawReport) {
             is_valid = false;
