@@ -17,6 +17,34 @@ env:
       - docs/**
   pull_request: null
 jobs:
+  add-tag:
+    strategy:
+      matrix:
+        include:
+          - name: "@tarojs/plugin-doctor-win32-x64-msvc"
+            version: "0.0.19"
+          - name: "@tarojs/plugin-doctor-darwin-x64"
+            version: "0.0.19"
+          - name: "@tarojs/plugin-doctor-linux-x64-gnu"
+            version: "0.0.19"
+          - name: "@tarojs/plugin-doctor-darwin-arm64"
+            version: "0.0.19"
+          - name: "@tarojs/plugin-doctor-linux-x64-musl"
+            version: "0.0.19"
+          - name: "@tarojs/plugin-doctor"
+            version: "0.0.19"
+    name: add-tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add NPM dist-tag
+        run: |
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          echo "Tagging ${{ matrix.name }}@${{ matrix.version }} as latest"
+          npm dist-tag add "${{ matrix.name }}@${{ matrix.version }}" latest
+
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
   build:
     strategy:
       fail-fast: false
