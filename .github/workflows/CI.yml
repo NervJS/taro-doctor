@@ -241,17 +241,30 @@ jobs:
         shell: bash
       - name: Publish
         run: |
-          if git log -1 --pretty=%B | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+$";
-          then
-            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-            npm publish --access public
-          elif git log -1 --pretty=%B | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+";
-          then
-            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-            npm publish --tag next --access public
+          # 获取 commit message（第一行 + 去空格）
+          COMMIT_MSG=$(git log -1 --pretty=%B | head -n1 | xargs)
+
+          # 打印调试信息
+          echo "Raw commit message:"
+          git log -1 --pretty=%B | cat -A
+
+          echo "Trimmed commit message: '$COMMIT_MSG'"
+
+          # 检查是否完全匹配版本号格式
+          if [[ "$COMMIT_MSG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Matched latest pattern"
+            TAG="latest"
+          elif [[ "$COMMIT_MSG" =~ [0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "Matched next pattern"
+            TAG="next"
           else
+            echo "Not matched any pattern"
             echo "Not a release, skipping publish"
+            exit 0
           fi
+
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          npm publish --tag $TAG --access public
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
