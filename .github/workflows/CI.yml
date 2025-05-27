@@ -39,9 +39,7 @@ jobs:
       - name: Add NPM dist-tag
         run: |
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-          echo "Tagging ${{ matrix.name }}@${{ matrix.version }} as latest"
-          npm dist-tag add "${{ matrix.name }}@${{ matrix.version }}" latest
-
+          npm dist-tag rm "${{ matrix.name }}@${{ matrix.version }}" next
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       
