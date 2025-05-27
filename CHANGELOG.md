@@ -1,3 +1,12 @@
+## [0.0.19](https://github.com/NervJS/taro-doctor/compare/v0.0.18...v0.0.19) (2025-05-27)
+
+
+### Features
+
+* 支持 eslint 9 配置以及stylelint检测 ([646a699](https://github.com/NervJS/taro-doctor/commit/646a6994e58225bef6f8201a7ebc58f684bb6956))
+
+
+
 ## [0.0.18](https://github.com/NervJS/taro-doctor/compare/v0.0.13...v0.0.18) (2024-07-11)
 
 
