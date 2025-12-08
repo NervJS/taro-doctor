@@ -11,7 +11,7 @@ use super::{
   message::{Message, MessageKind},
 };
 
-const UPDATE_PACKAGE_LIST: [&str; 53] = [
+const UPDATE_PACKAGE_LIST: [&str; 54] = [
   "babel-plugin-transform-react-jsx-to-rn-stylesheet",
   "taro-css-to-react-native",
   "stylelint-config-taro-rn",
@@ -61,6 +61,7 @@ const UPDATE_PACKAGE_LIST: [&str; 53] = [
   "@tarojs/plugin-platform-qq",
   "@tarojs/plugin-platform-jd",
   "@tarojs/plugin-platform-h5",
+  "@tarojs/plugin-platform-ascf",
   "@tarojs/plugin-html",
   "@tarojs/plugin-mini-ci",
   "@tarojs/webpack5-runner",
